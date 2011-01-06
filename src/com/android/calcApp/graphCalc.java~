@@ -1,0 +1,50 @@
+package com.android.calcApp;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.Button;
+import android.view.View.OnClickListener;
+import android.view.View;
+import android.widget.Toast;
+import android.widget.TableRow;
+
+public class graphCalc extends Activity {
+
+    private GraphView graph;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.graph);
+	graph = (GraphView) findViewById(R.id.graph);
+	//float err = graph.setBounds(-10,10,-10,10,10,10);
+	//Toast.makeText(graphCalc.this, Float.toString(err),
+	//	       Toast.LENGTH_LONG).show();
+
+	TextView setBB = (TextView) findViewById(R.id.setBounds);
+	setBB.setOnClickListener(updateBounds);
+    }
+
+    private OnClickListener updateBounds = new OnClickListener() {
+	    public void onClick(View v) {
+		EditText xminT = (EditText) findViewById(R.id.setxmin);
+		EditText xmaxT = (EditText) findViewById(R.id.setxmax);
+		EditText yminT = (EditText) findViewById(R.id.setymin);
+		EditText ymaxT = (EditText) findViewById(R.id.setymax);
+		EditText xticksT = (EditText) findViewById(R.id.setxticks);
+		EditText yticksT = (EditText) findViewById(R.id.setyticks);
+		int xmin = Integer.parseInt(xminT.getText().toString());
+		int xmax = Integer.parseInt(xmaxT.getText().toString());
+		int ymin = Integer.parseInt(yminT.getText().toString());
+		int ymax = Integer.parseInt(ymaxT.getText().toString());
+		int xticks = Integer.parseInt(xticksT.getText().toString());
+		int yticks = Integer.parseInt(yticksT.getText().toString());
+		graph.setBounds(xmin,xmax,ymin,ymax,xticks,yticks);
+		graph.invalidate();
+	    }
+	};
+
+}

@@ -1,0 +1,142 @@
+package com.android.calcApp;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.Button;
+import android.view.ContextMenu;
+import android.view.MenuItem;
+import android.content.Context;
+import android.view.View.OnClickListener;
+import android.view.View;
+import android.widget.Toast;
+
+public class convCalc extends Activity {
+
+    private EditText input;
+    private TextView output;
+    private int menFlag,from;
+    private String[] curNames;
+    private double[] curConvs;
+    private View type;
+    private double result;
+
+    private String[] massNames = { "Microgram","Milligram","Gram","Kilogram",
+				   "Metric ton/Megagram","Grain","Dram",
+				   "Ounce","Pound","US ton" };
+    private double[] massConvs = { 0.000001,0.001,1,1000,1000000,0.06479891,
+				1.7718451953,28.349523125,453.59237,907184.74 };
+    private String[] tempNames = { "Celsius","Kelvin","Fahrenheit","Rankine" };
+    private double[] tempConvs = { 274.15,1,255.9277778,0.5555556 };
+    private String[] volNames = { "Microliter","Milliliter","Liter","Kiloliter",
+				  "Fifth","Shot","Gallon (US)","Pint (US)","Quart (US)" };
+    private double[] volConvs = { 0.000001,0.001,1,1000,1000000,0.7570823568,0.029573529563,
+				  3.785411784,0.473176473,0.946352946 };
+    
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.conv);
+	
+	input = (EditText) findViewById(R.id.convInput);
+	output = (TextView) findViewById(R.id.convResult);
+	//output.setText("hello");
+	menFlag = 0;
+	from = -1;
+	result = 0;
+
+	Button mass = (Button) findViewById(R.id.mass);
+	mass.setOnClickListener(makeClickListener(massNames,massConvs,mass));
+	registerForContextMenu(mass);
+	Button temp = (Button) findViewById(R.id.temp);
+	temp.setOnClickListener(makeClickListener(tempNames,tempConvs,temp));
+	registerForContextMenu(temp);
+	Button vol = (Button) findViewById(R.id.volume);
+	vol.setOnClickListener(makeClickListener(volNames,volConvs,vol));
+	registerForContextMenu(vol);
+    }
+
+    /*public void onResume() {
+	super.onResume();
+	Toast.makeText(convCalc.this, "OK",
+			   Toast.LENGTH_LONG).show();
+	if(menFlag == 2) {
+	    openContextMenu(type);
+	    menFlag = 0;
+	}
+	}*/
+    
+    private OnClickListener makeClickListener(final String[] names,final double[] convs,final Button b) {
+	return new OnClickListener() {
+	    public void onClick(View v) {
+		curNames = names;
+		curConvs = convs;
+		menFlag = 2;
+		openContextMenu(b);
+		menFlag = 1;
+		openContextMenu(b);
+	    }
+	};
+    }
+
+    public void onCreateContextMenu(ContextMenu menu, View v,ContextMenu.ContextMenuInfo menuInfo) {
+	if(menFlag == 1) {
+	    menu.setHeaderTitle("Convert from...");
+	} else if(menFlag == 2) {
+	    menu.setHeaderTitle("to...");
+	}
+	for(int i=0;i<curNames.length;i+=1) {
+	    menu.add(0,i,0,curNames[i]);
+	}
+	type = v;
+    }
+    
+    public boolean onContextItemSelected(MenuItem item) {
+	if(menFlag == 1) {
+	    from = item.getItemId();
+	    menFlag = 2;
+	} else {
+	    double inp = Double.parseDouble(input.getText().toString());
+	    if(curNames[0].compareTo("Celsius") == 0) {
+		// Temp conversion is special :/
+		result = convertTemp(curNames[from],curNames[item.getItemId()],inp);
+	    } else {
+		result = (inp * curConvs[from]) / curConvs[item.getItemId()];
+	    }
+	    //Toast.makeText(convCalc.this, Integer.toString(from)+" "+Integer.toString(item.getItemId()),Toast.LENGTH_LONG).show();
+	    output.setText(Double.toString(result));
+	    menFlag = 0;
+	}
+	return true;
+    }
+
+    private double convertTemp(String l1, String l2, double x) {
+	double n=0;
+	if(l1.compareTo("Celsius") == 0)
+	    n = x + 273.15;
+	else if(l1.compareTo("Kelvin") == 0)
+	    n = x;
+	else if(l1.compareTo("Fahrenheit") == 0)
+	    n = (x + 459.67) * (5.0 / 9.0);
+	else if(l1.compareTo("Rankine") == 0)
+	    n = x * (5.0 / 9.0);
+	if(l2.compareTo("Celsius") == 0)
+	    return n - 273.15;
+	else if(l2.compareTo("Kelvin") == 0)
+	    return n;
+	else if(l2.compareTo("Fahrenheit") == 0)
+	    return (n * (9.0 / 5.0)) - 459.67;
+	else if(l2.compareTo("Rankine") == 0)
+	    return n * (9.0 / 5.0);
+	return -1;
+    }
+
+    private int indexOf(String s, String[] a) {
+	for(int i=0;i<a.length;i+=1) {
+	    if(s.compareTo(a[i]) == 0) {
+		return i;
+	    }
+	}
+	return -1;
+    }
+}

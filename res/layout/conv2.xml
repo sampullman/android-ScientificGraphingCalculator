@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+   xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_width="fill_parent"
+   android:layout_height="fill_parent"
+   android:orientation="vertical">
+  <LinearLayout
+     android:orientation="horizontal"
+     android:layout_width="fill_parent"
+     android:layout_height="fill_parent"
+     android:layout_weight="1.2">
+      <TextView
+	 android:id="@+id/convT1"
+	 android:textSize="26sp"
+	 android:layout_height="fill_parent"
+	 android:layout_width="fill_parent"
+	 android:layout_gravity="center_vertical|center_horizontal"
+	 android:textScaleX="0.7"
+	 android:layout_weight="1.1"
+	 android:text="Conv:" />
+      <EditText
+	 android:id="@+id/convInput"
+	 android:textSize="22sp"
+	 android:layout_height="fill_parent"
+	 android:layout_width="fill_parent"
+	 android:singleLine="true"
+	 android:layout_weight="0.45"
+	 android:inputType="phone"
+	 android:text="" />
+      <Button
+	 android:id="@+id/pasteConv"
+	 android:layout_width="fill_parent"
+	 android:layout_height="fill_parent"
+	 android:layout_weight="1.05"
+	 android:textSize="14sp"
+	 android:text="paste" /> 
+  </LinearLayout>
+  <LinearLayout
+     android:orientation="horizontal"
+     android:layout_width="fill_parent"
+     android:layout_height="fill_parent"
+     android:layout_weight="1">
+    <Button
+       android:id="@+id/mass"
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:textStyle="bold"
+       android:layout_weight="1"
+       android:textSize="15sp"
+       android:text="Mass" /> 
+    <Button
+       android:id="@+id/temp"
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:textStyle="bold"
+       android:layout_weight="1"
+       android:textSize="15sp"
+       android:text="Temp" /> 
+    <Button
+       android:id="@+id/volume"
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:textStyle="bold"
+       android:layout_weight="1"
+       android:textSize="15sp"
+       android:text="Volume" /> 
+    <Button
+       android:id="@+id/dist"
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:textStyle="bold"
+       android:layout_weight="1"
+       android:textSize="15sp"
+       android:text="Dist." /> 
+  </LinearLayout>
+  <LinearLayout
+     android:orientation="horizontal"
+     android:layout_width="fill_parent"
+     android:layout_height="fill_parent"
+     android:layout_weight="1">
+    <Button
+       android:id="@+id/cooking"
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:layout_weight="1"
+       android:textStyle="bold"
+       android:textScaleX="0.9"
+       android:textSize="15sp"
+       android:text="Cooking" /> 
+    <Button
+       android:id="@+id/speed"
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:layout_weight="1"
+       android:textStyle="bold"
+       android:textSize="15sp"
+       android:text="Speed" /> 
+    <Button
+       android:id="@+id/base"
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:layout_weight="1"
+       android:textStyle="bold"
+       android:textSize="15sp"
+       android:text="Base" /> 
+    <Button
+       android:id="@+id/energy"
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:layout_weight="1"
+       android:textScaleX="0.85"
+       android:textStyle="bold"
+       android:textSize="15sp"
+       android:text="Energy" /> 
+  </LinearLayout>
+  <LinearLayout
+     android:orientation="horizontal"
+     android:layout_width="fill_parent"
+     android:layout_height="fill_parent"
+     android:layout_weight="1.2">
+    <TextView
+       android:id="@+id/convT2"
+       android:textSize="24sp"
+       android:layout_height="fill_parent"
+       android:layout_width="fill_parent"
+       android:layout_gravity="center_vertical|center_horizontal"
+       android:layout_weight="1.1"
+       android:textScaleX="0.7"
+       android:text="Result:" />
+    <TextView
+       android:id="@+id/convResult"
+       android:textSize="28sp"
+       android:layout_height="fill_parent"
+       android:layout_width="fill_parent"
+       android:layout_gravity="center"
+       android:textColor="#ffffff"
+       android:background="#999999"
+       android:singleLine="true"
+       android:layout_weight="0.45"
+       android:text="" />
+    <Button
+       android:id="@+id/copyConv"
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:layout_weight="1.1"
+       android:textSize="14sp"
+       android:text="copy" /> 
+  </LinearLayout>
+</LinearLayout>
