@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+   xmlns:android="http://schemas.android.com/apk/res/android"
+   android:orientation="vertical"
+   android:layout_width="fill_parent"
+   android:layout_height="fill_parent" >
+  <LinearLayout
+     android:orientation="horizontal"
+     android:layout_width="fill_parent"
+     android:layout_height="fill_parent"
+     android:minHeight="300dp"
+     android:layout_weight="0.2">
+    <ScrollView 
+       android:id="@+id/ScrollView01"
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent">
+      <TextView
+	     android:id="@+id/calchelp_text"
+	     android:textSize="16sp"
+	     android:layout_height="fill_parent"
+	     android:layout_width="fill_parent"
+	     android:layout_gravity="top"
+	     android:text="" />
+    </ScrollView>
+  </LinearLayout>
+  <LinearLayout
+     android:orientation="horizontal"
+     android:layout_width="fill_parent"
+     android:layout_height="fill_parent"
+     android:layout_weight="1">
+    <TextView
+	   android:id="@+id/calchelp_empty0"
+	   android:textSize="18sp"
+	   android:layout_height="fill_parent"
+	   android:layout_width="fill_parent"
+	   android:layout_weight="1.1"
+	   android:text="" />
+    <Button
+       android:id="@+id/calchelp_ret"
+       android:layout_height="fill_parent"
+	   android:layout_width="fill_parent"
+       android:textStyle="bold"
+       android:textSize="15sp"
+       android:layout_weight="1"
+       android:text="Back" /> 
+    <TextView
+	   android:id="@+id/calchelp_empty1"
+	   android:textSize="18sp"
+	   android:layout_height="fill_parent"
+	   android:layout_width="fill_parent"
+	   android:layout_weight="1.1"
+	   android:text="" />
+  </LinearLayout>
+</LinearLayout>
