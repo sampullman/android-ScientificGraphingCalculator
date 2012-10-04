@@ -1,0 +1,32 @@
+# view res/layout/calc.xml #generated:30
+# view res/layout/calc.xml #generated:38
+-keep class com.threeDBJ.calcAppLib.AutoRepeatButton { <init>(...); }
+
+# view AndroidManifest.xml #generated:9
+-keep class com.threeDBJ.calcAppLib.CalcApp { <init>(...); }
+
+# view res/layout/graph.xml #generated:8
+-keep class com.threeDBJ.calcAppLib.GraphView { <init>(...); }
+
+# view res/layout/calc.xml #generated:7
+# view res/layout/calc2.xml #generated:12
+# view res/layout/fnentry.xml #generated:23
+# view res/layout/fnentry.xml #generated:51
+# view res/layout/fnentry.xml #generated:79
+-keep class com.threeDBJ.calcAppLib.NoImeEditText { <init>(...); }
+
+# view AndroidManifest.xml #generated:43
+-keep class com.threeDBJ.calcAppLib.convCalc { <init>(...); }
+
+# view AndroidManifest.xml #generated:36
+-keep class com.threeDBJ.calcAppLib.fnEntry { <init>(...); }
+
+# view AndroidManifest.xml #generated:29
+-keep class com.threeDBJ.calcAppLib.graphCalc { <init>(...); }
+
+# view AndroidManifest.xml #generated:23
+-keep class com.threeDBJ.calcAppLib.mainCalc { <init>(...); }
+
+# view AndroidManifest.xml #generated:13
+-keep class com.threeDBJ.calcAppLib.mainTab { <init>(...); }
+
