@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.ads.AdView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+    android:id="@+id/ad"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    ads:adUnitId="a14df8728456a25"
+    ads:adSize="BANNER"
+    ads:loadAdOnCreate="true"
+    ads:backgroundColor="#000000"
+    ads:primaryTextColor="#FFFFFF"
+    ads:secondaryTextColor="#CCCCCC"
+    android:gravity="center"
+    ads:keywords="Android scientific graphing calculator"/>

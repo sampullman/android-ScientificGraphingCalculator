@@ -1,0 +1,22 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="9" android:versionName="1.8" package="com.threeDBJ.calcAppFree">
+  <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="16"/>
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <application android:icon="@drawable/ic_main" android:label="@string/app_name" android:name="CalcAppFree" android:theme="@style/Theme.Sherlock">
+    <activity android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" android:name="com.google.ads.AdActivity"/>
+    <activity android:label="@string/app_name" android:name="com.threeDBJ.calcAppLib.ActionBarTabs" android:windowSoftInputMode="stateHidden">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
+    <activity android:configChanges="keyboardHidden|orientation" android:label="@string/fn_entry" android:name="com.threeDBJ.calcAppLib.fnEntry" android:windowSoftInputMode="stateAlwaysHidden"/>
+    <activity android:configChanges="orientation|keyboardHidden" android:label="@string/settings" android:name="com.threeDBJ.calcAppLib.Settings" android:screenOrientation="portrait"/>
+    <service android:name="SoftKeyboard" android:permission="android.permission.BIND_INPUT_METHOD">
+      <intent-filter>
+	<action android:name="android.view.InputMethod"/>
+      </intent-filter>
+      <meta-data android:name="android.view.im" android:resource="@xml/method"/>
+    </service>
+  </application>
+</manifest>

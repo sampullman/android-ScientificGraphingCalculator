@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SciGraph Calculator</string>
+    <string name="fn_entry">Function Entry</string>
+    <string name="settings">Calculator Settings</string>
+    <string name="result"><u>Result:</u></string>
+    <string name="input"><u>Input:</u></string>
+</resources>

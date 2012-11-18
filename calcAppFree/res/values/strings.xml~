@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">calcAppActivity</string>
+    <string name="fn_entry">Function Entry</string>
+    <string name="massText"><u>Mass</u></string>
+    <string name="volText"><u>Volume</u></string>
+    <string name="distText"><u>Distance</u></string>
+    <string name="tempText"><u>Temp</u></string>
+    <string name="cookText"><u>Cooking</u></string>
+    <string name="baseTitle"><u>Base</u></string>
+</resources>

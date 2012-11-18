@@ -1,0 +1,2 @@
+-Comment out dup_yyval in yy_parse
+-Do not reinitialize objects in val_init, initialize just once.

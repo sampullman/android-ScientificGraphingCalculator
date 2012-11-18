@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+  <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+    <TextView
+	android:id="@+id/calchelp_text"
+	android:textSize="16sp"
+	android:layout_height="wrap_content"
+	android:layout_width="match_parent"
+	android:text="" />
+  </ScrollView>
+  <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:weightSum="1.0">
+    <TextView
+	android:id="@+id/calchelp_empty0"
+	android:textSize="18sp"
+	android:layout_height="wrap_content"
+	android:layout_width="0dp"
+	android:layout_weight="0.35"
+	android:text="" />
+    <Button
+	android:id="@+id/calchelp_ret"
+	android:layout_height="wrap_content"
+	android:layout_width="0dp"
+	android:textStyle="bold"
+	android:textSize="15sp"
+	android:layout_weight="0.3"
+	android:text="Back" />
+    <TextView
+	android:id="@+id/calchelp_empty1"
+	android:textSize="18sp"
+	android:layout_height="match_parent"
+	android:layout_width="0dp"
+	android:layout_weight="0.35"
+	android:text="" />
+  </LinearLayout>
+</LinearLayout>

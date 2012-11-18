@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginBottom="0dp"
+    android:paddingBottom="0dp"
+    android:weightSum="1.0">
+  <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="0.1">
+    <EditText
+	android:id="@+id/conv_input"
+	android:textSize="22sp"
+	android:layout_height="match_parent"
+	android:layout_width="0dp"
+	android:singleLine="true"
+	android:layout_weight="0.76"
+	android:inputType="phone"
+	android:imeOptions="actionDone"
+	android:hint="Tap to input value"
+	android:text="" />
+    <Button
+	android:id="@+id/paste_conv"
+	style="@style/btn_clear"
+	android:layout_weight="0.24"
+	android:textSize="15sp"
+	android:background="@drawable/btn_transparent"
+	android:text="Paste" />
+  </LinearLayout>
+  <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="0.1"
+      android:weightSum="1.0">
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+	android:layout_weight="0.5"
+	android:gravity="center_horizontal|bottom"
+	android:textSize="20sp"
+	android:textStyle="bold"
+	android:text="Conversion" />
+    <RadioGroup
+        android:id="@+id/radio"
+	android:orientation="horizontal"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+	android:layout_weight="0.5"
+	android:visibility="invisible"
+	android:weightSum="1.0" >
+      <RadioButton
+	  android:id="@+id/radio_from"
+	  android:layout_width="0dp"
+	  android:layout_height="match_parent"
+	  android:layout_weight="0.5"
+	  android:textColor="#E100C8E1"
+	  android:text="From"
+	  android:checked="true" />
+      <RadioButton
+	  android:id="@+id/radio_to"
+	  android:layout_width="0dp"
+	  android:layout_height="match_parent"
+	  android:layout_weight="0.5"
+	  android:textColor="#E1F500BE"
+	  android:text="To" />
+    </RadioGroup>
+  </LinearLayout>
+  <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="0.62"
+      android:padding="8dp"
+      android:weightSum="1.0">
+    <ListView
+	android:id="@+id/conv_types"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+	android:layout_weight="0.5"
+	android:layout_marginRight="4dp"
+	android:gravity="center"
+        android:choiceMode="singleChoice" />
+    <ListView
+	android:id="@+id/conv_choice"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+	android:layout_weight="0.5"
+	android:layout_marginLeft="4dp"
+        android:choiceMode="singleChoice"
+	android:visibility="invisible"/>
+  </LinearLayout>
+  <include layout="@layout/ad_space" />
+  <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="0.08"
+      android:weightSum="1.0">
+    <TextView
+	android:id="@+id/unit_display"
+	android:textSize="16sp"
+	android:layout_height="match_parent"
+	android:layout_width="match_parent"
+	android:gravity="center"
+	android:text="" />
+  </LinearLayout>
+  <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="0.1"
+      android:layout_marginBottom="0dp"
+      android:paddingBottom="0dp"
+      android:weightSum="1.0">
+    <TextView
+	android:id="@+id/conv_result"
+	android:textSize="28sp"
+	android:layout_height="match_parent"
+	android:layout_width="0dp"
+	android:singleLine="true"
+	android:layout_weight="0.76"
+	android:background="@drawable/btn_transparent"
+	android:paddingLeft="8dp"
+	android:paddingBottom="0dp"
+	android:text="Result" />
+    <Button
+	android:id="@+id/copy_conv"
+	style="@style/btn_clear"
+	android:layout_weight="0.24"
+	android:textSize="16sp"
+	android:background="@drawable/btn_transparent"
+	android:text="Copy" />
+  </LinearLayout>
+</LinearLayout>
