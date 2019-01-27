@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="light">#FFD0D0D0</color>
+    <color name="dark">#FF222222</color>
+    <color name="dark_gray">#FF333333</color>
+    <color name="yellow1">#fdd023</color>
+    <color name="yellow2">#e9b200</color>
+    <color name="orange1">#f68b1f</color>
+    <color name="orange2">#f17022</color>
+    <color name="blue1">#00b2ee</color>
+    <color name="blue2">#009acd</color>
+    <color name="grey01">#7a7a7a</color>
+
+    <color name="bar_background">#111</color>
+</resources>

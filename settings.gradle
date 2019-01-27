@@ -1,0 +1,2 @@
+include ':calcAppLib'
+include ':calcAppFree', ':calcAppPaid'

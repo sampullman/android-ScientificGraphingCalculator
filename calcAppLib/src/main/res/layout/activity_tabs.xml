@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/view_full">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            style="@style/toolbar">
+        </android.support.v7.widget.Toolbar>
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bar_background"
+            app:tabSelectedTextColor="@color/light"
+            app:tabTextColor="@color/dark_gray"
+            app:tabMode="fixed"
+            app:tabGravity="fill" />
+    </LinearLayout>
+
+    <com.threeDBJ.calcAppLib.CalcViewPager
+        android:id="@+id/calc_pager"
+        style="@style/view_full">
+    </com.threeDBJ.calcAppLib.CalcViewPager>
+</LinearLayout>

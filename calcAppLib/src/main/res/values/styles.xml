@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="view_full">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+    <style name="view_wide">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+    </style>
+    <style name="view_tall">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+    <style name="linear_horizontal_wide" parent="view_wide">
+        <item name="android:orientation">horizontal</item>
+    </style>
+    <style name="linear_vertical_full" parent="@style/view_full">
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/bar_background</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
+    </style>
+
+    <style name="row" parent="linear_horizontal_wide">
+        <item name="android:layout_weight">1</item>
+        <item name="android:weightSum">1.0</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:background">@color/dark_gray</item>
+    </style>
+    <style name="btn" parent="view_tall">
+        <item name="android:textColor">@color/light</item>
+        <item name="android:layout_marginLeft">1dp</item>
+        <item name="android:layout_marginTop">1dp</item>
+        <item name="android:layout_marginRight">1dp</item>
+        <item name="android:layout_marginBottom">1dp</item>
+        <item name="android:background">@drawable/btn_black</item>
+    </style>
+    <style name="btn_clear" parent="@style/btn">
+    </style>
+    <style name="btn_even" parent="@style/btn_clear">
+        <item name="android:layout_weight">0.2</item>
+    </style>
+    <style name="btn_num" parent="@style/btn_clear">
+        <item name="android:layout_weight">0.22</item>
+        <item name="android:textSize">23sp</item>
+    </style>
+    <style name="btn_num_wide" parent="@style/btn_num">
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+    <style name="calc_row" parent="linear_horizontal_wide">
+        <item name="android:layout_weight">1</item>
+        <item name="android:weightSum">1.0</item>
+        <item name="android:background">@color/dark_gray</item>
+    </style>
+    <style name="prev">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/light</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@drawable/btn_black_normal</item>
+        <item name="android:visibility">gone</item>
+    </style>
+    <style name="prev_result" parent="@style/prev">
+        <item name="android:background">@drawable/btn_black</item>
+    </style>
+</resources>

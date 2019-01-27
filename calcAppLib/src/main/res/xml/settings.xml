@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+  <PreferenceCategory>
+    <EditTextPreference
+	android:key="rounding"
+	android:inputType="number"
+	android:summary="Click to change rounding. Must be between 0 and 13"
+	android:title="Rounding digits"
+	android:defaultValue="6" />
+    <SwitchPreference
+	android:key="angle_rad"
+	android:summary="Toggles degree/radian mode"
+	android:title="Rad/Deg mode"
+	android:switchTextOn="Rad"
+	android:switchTextOff="Deg"
+	android:defaultValue="true" />
+  </PreferenceCategory>
+</PreferenceScreen>
