@@ -1,3 +1,0 @@
-ant clean
-ant debug
-adb install -r bin/calcApp-debug.apk

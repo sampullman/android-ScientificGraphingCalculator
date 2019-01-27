@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-  <item android:id="@+id/calc_help"
-        android:title="Help" />
-  <item android:id="@+id/extra_fns"
-        android:title="More Functions" />
-  <item android:id="@+id/buy_adfree"
-        android:title="Buy Ad Free" />
-</menu>
