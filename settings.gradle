@@ -1,2 +1,2 @@
-include ':calcAppLib'
+include ':calcAppLib', ':calcAppLib'
 include ':calcAppFree', ':calcAppPaid'

@@ -3,7 +3,7 @@ package com.threeDBJ.calcAppLib;
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.view.inputmethod.EditorInfo;
@@ -13,16 +13,12 @@ import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
 import android.widget.TextView.OnEditorActionListener;
 import android.view.View;
-import android.view.KeyEvent;
 import android.widget.EditText;
 import android.view.WindowManager;
 import android.content.res.Configuration;
 import android.content.pm.ActivityInfo;
 import android.widget.TextView;
 import android.app.Dialog;
-
-import butterknife.BindView;
-import butterknife.OnClick;
 
 public class fnEntry extends Activity {
 
@@ -32,7 +28,7 @@ public class fnEntry extends Activity {
     private static final String help_text = "-The graph or \"back\" button will both take you back to the graph screen.\n-copy/paste works across tabs.\n\n-Please submit bugs and feature requests to 3dbj.dev@gmail.com";
 
     CalcApp appState;
-    @BindView(R2.id.shift) Button shift;
+    Button shift;
 
     private EditText[] fns;
 
@@ -46,9 +42,11 @@ public class fnEntry extends Activity {
         appState = (CalcApp) getApplicationContext();
         this.NUM_FNS = appState.getNumFns();
         this.fns = new EditText[NUM_FNS];
-        fns[0] = (EditText) findViewById(R.id.fn1);
-        fns[1] = (EditText) findViewById(R.id.fn2);
-        fns[2] = (EditText) findViewById(R.id.fn3);
+        fns[0] = findViewById(R.id.fn1);
+        fns[1] = findViewById(R.id.fn2);
+        fns[2] = findViewById(R.id.fn3);
+        shift = findViewById(R.id.shift);
+        shift.setOnClickListener(shiftButtonClick);
 
         for(int i = 0; i < NUM_FNS; i += 1) {
             fns[i].setText(getCalcs()[i].viewStr);
@@ -64,76 +62,76 @@ public class fnEntry extends Activity {
         fns[fnState].requestFocus();
         fns[fnState].setSelection(getIndex());
 
-        Button n = (Button) findViewById(R.id.fns_graph);
+        Button n = findViewById(R.id.fns_graph);
         n.setOnClickListener(graphBtn);
 
-        n = (Button) findViewById(R.id.left);
+        n = findViewById(R.id.left);
         n.setOnClickListener(leftBtn);
-        n = (Button) findViewById(R.id.right);
+        n = findViewById(R.id.right);
         n.setOnClickListener(rightBtn);
-        n = (Button) findViewById(R.id.del);
+        n = findViewById(R.id.del);
         n.setOnClickListener(bspcBtn);
-        n = (Button) findViewById(R.id.clr);
+        n = findViewById(R.id.clr);
         n.setOnClickListener(clrBtn);
-        n = (Button) findViewById(R.id.one);
+        n = findViewById(R.id.one);
         n.setOnClickListener(makeClickListener("1", "1"));
-        n = (Button) findViewById(R.id.two);
+        n = findViewById(R.id.two);
         n.setOnClickListener(makeClickListener("2", "2"));
-        n = (Button) findViewById(R.id.three);
+        n = findViewById(R.id.three);
         n.setOnClickListener(makeClickListener("3", "3"));
-        n = (Button) findViewById(R.id.four);
+        n = findViewById(R.id.four);
         n.setOnClickListener(makeClickListener("4", "4"));
-        n = (Button) findViewById(R.id.five);
+        n = findViewById(R.id.five);
         n.setOnClickListener(makeClickListener("5", "5"));
-        n = (Button) findViewById(R.id.six);
+        n = findViewById(R.id.six);
         n.setOnClickListener(makeClickListener("6", "6"));
-        n = (Button) findViewById(R.id.seven);
+        n = findViewById(R.id.seven);
         n.setOnClickListener(makeClickListener("7", "7"));
-        n = (Button) findViewById(R.id.eight);
+        n = findViewById(R.id.eight);
         n.setOnClickListener(makeClickListener("8", "8"));
-        n = (Button) findViewById(R.id.nine);
+        n = findViewById(R.id.nine);
         n.setOnClickListener(makeClickListener("9", "9"));
-        n = (Button) findViewById(R.id.zero);
+        n = findViewById(R.id.zero);
         n.setOnClickListener(makeClickListener("0", "0"));
 
-        n = (Button) findViewById(R.id.point);
+        n = findViewById(R.id.point);
         n.setOnClickListener(makeClickListener(".", "."));
-        n = (Button) findViewById(R.id.plus);
+        n = findViewById(R.id.plus);
         n.setOnClickListener(makeClickListener("+", "+"));
-        n = (Button) findViewById(R.id.minus);
+        n = findViewById(R.id.minus);
         n.setOnClickListener(makeClickListener("-", "-"));
-        n = (Button) findViewById(R.id.mult);
+        n = findViewById(R.id.mult);
         n.setOnClickListener(makeClickListener("*", "*"));
-        n = (Button) findViewById(R.id.sign);
+        n = findViewById(R.id.sign);
         n.setOnClickListener(makeClickListener("-", "-"));
-        n = (Button) findViewById(R.id.div);
+        n = findViewById(R.id.div);
         n.setOnClickListener(makeClickListener("/", "/"));
-        n = (Button) findViewById(R.id.ln);
+        n = findViewById(R.id.ln);
         n.setOnClickListener(makeFnClickListener("Log", "ln"));
-        n = (Button) findViewById(R.id.sqr);
+        n = findViewById(R.id.sqr);
         n.setOnClickListener(sqrBtn);
-        n = (Button) findViewById(R.id.pwr);
+        n = findViewById(R.id.pwr);
         n.setOnClickListener(makeClickListener("^", "^"));
-        n = (Button) findViewById(R.id.lParen);
+        n = findViewById(R.id.lParen);
         n.setOnClickListener(makeClickListener("(", "("));
-        n = (Button) findViewById(R.id.rParen);
+        n = findViewById(R.id.rParen);
         n.setOnClickListener(makeClickListener(")", ")"));
-        n = (Button) findViewById(R.id.sin);
+        n = findViewById(R.id.sin);
         n.setOnClickListener(makeFnClickListener("Sin", "sin"));
-        n = (Button) findViewById(R.id.cos);
+        n = findViewById(R.id.cos);
         n.setOnClickListener(makeFnClickListener("Cos", "cos"));
-        n = (Button) findViewById(R.id.tan);
+        n = findViewById(R.id.tan);
         n.setOnClickListener(makeFnClickListener("Tan", "tan"));
-        n = (Button) findViewById(R.id.euler);
+        n = findViewById(R.id.euler);
         n.setOnClickListener(makeClickListener("e", "e"));
-        n = (Button) findViewById(R.id.pie);
+        n = findViewById(R.id.pie);
         n.setOnClickListener(makeClickListener("PI", "pi"));
-        n = (Button) findViewById(R.id.xVar);
+        n = findViewById(R.id.xVar);
         n.setOnClickListener(makeClickListener("x", "x"));
-        n = (Button) findViewById(R.id.copy);
+        n = findViewById(R.id.copy);
         n.setOnClickListener(pasteBtn);
         n.setText("paste");
-        n = (Button) findViewById(R.id.E);
+        n = findViewById(R.id.E);
         n.setOnClickListener(makeClickListener("E", "E"));
     }
 
@@ -187,39 +185,27 @@ public class fnEntry extends Activity {
     }
 
     private OnClickListener makeClickListener(final String token, final String viewString) {
-        return new OnClickListener() {
-            public void onClick(View v) {
-                getCalc().addToken(token, viewString.length(), getIndex());
-                updateView(viewString.length(), viewString);
-            }
+        return v -> {
+            getCalc().addToken(token, viewString.length(), getIndex());
+            updateView(viewString.length(), viewString);
         };
     }
 
     private OnClickListener makeFnClickListener(final String token, final String viewString) {
-        return new OnClickListener() {
-            public void onClick(View v) {
-                getCalc().addToken(token, viewString.length(), getIndex());
-                updateView(viewString.length(), viewString);
-                getCalc().addToken("(", 1, getIndex());
-                updateView(1, "(");
-            }
+        return v -> {
+            getCalc().addToken(token, viewString.length(), getIndex());
+            updateView(viewString.length(), viewString);
+            getCalc().addToken("(", 1, getIndex());
+            updateView(1, "(");
         };
     }
 
-    private OnLongClickListener defaultLongClick = new OnLongClickListener() {
-        public boolean onLongClick(View v) {
-            return true;
-        }
-    };
+    private OnLongClickListener defaultLongClick = v -> true;
 
-    private OnEditorActionListener ioEdit = new OnEditorActionListener() {
-
-        @Override
-        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-            if(actionId == EditorInfo.IME_ACTION_DONE) {
-            }
-            return false;
+    private OnEditorActionListener ioEdit = (v, actionId, event) -> {
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
         }
+        return false;
     };
 
     private OnClickListener ioSelect = new OnClickListener() {
@@ -250,55 +236,6 @@ public class fnEntry extends Activity {
             }
         }
     };
-
-    @OnClick(R2.id.shift)
-    private void shiftButtonClick(View v) {
-        if(state == 0) {
-            Button n = (Button) findViewById(R.id.del);
-            n.setOnClickListener(delBtn);
-            n.setText("del");
-            n = (Button) findViewById(R.id.sin);
-            n.setOnClickListener(makeFnClickListener("Arcsin", "arcsin"));
-            n.setText("arcsin");
-            n.setTextSize(14);
-            n = (Button) findViewById(R.id.cos);
-            n.setOnClickListener(makeFnClickListener("Arccos", "arccos"));
-            n.setTextSize(14);
-            n.setText("arccos");
-            n = (Button) findViewById(R.id.tan);
-            n.setOnClickListener(makeFnClickListener("Arctan", "arctan"));
-            n.setText("arctan");
-            n.setTextSize(14);
-            n = (Button) findViewById(R.id.copy);
-            n.setOnClickListener(copyBtn);
-            n.setText("copy");
-            shift.setBackgroundResource(R.drawable.btn_shift_pressed);
-            shift.setTextColor(ContextCompat.getColor(this, R.color.dark));
-            state = 1;
-        } else {
-            Button n = (Button) findViewById(R.id.del);
-            n.setText("bspc");
-            n.setOnClickListener(bspcBtn);
-            n = (Button) findViewById(R.id.sin);
-            n.setOnClickListener(makeFnClickListener("Sin", "sin"));
-            n.setText("sin");
-            n.setTextSize(18);
-            n = (Button) findViewById(R.id.cos);
-            n.setOnClickListener(makeFnClickListener("Cos", "cos"));
-            n.setText("cos");
-            n.setTextSize(18);
-            n = (Button) findViewById(R.id.tan);
-            n.setOnClickListener(makeFnClickListener("Tan", "tan"));
-            n.setText("tan");
-            n.setTextSize(18);
-            n = (Button) findViewById(R.id.copy);
-            n.setOnClickListener(pasteBtn);
-            n.setText("paste");
-            shift.setBackgroundResource(R.drawable.btn_shift_normal);
-            shift.setTextColor(ContextCompat.getColor(this, R.color.light));
-            state = 0;
-        }
-    }
 
     private OnClickListener leftBtn = new OnClickListener() {
         public void onClick(View v) {
@@ -341,23 +278,19 @@ public class fnEntry extends Activity {
         }
     };
 
-    private OnClickListener clrBtn = new OnClickListener() {
-        public void onClick(View v) {
-            getCalc().tokens.clear();
-            getCalc().tokenLens.clear();
-            getCalc().viewStr = "";
-            setIndex(0);
-            fns[fnState].setText(getCalc().viewStr);
-            fns[fnState].setSelection(getIndex());
-        }
+    private OnClickListener clrBtn = v -> {
+        getCalc().tokens.clear();
+        getCalc().tokenLens.clear();
+        getCalc().viewStr = "";
+        setIndex(0);
+        fns[fnState].setText(getCalc().viewStr);
+        fns[fnState].setSelection(getIndex());
     };
 
-    private OnClickListener sqrBtn = new OnClickListener() {
-        public void onClick(View v) {
-            getCalc().addToken("^", 1, getIndex());
-            getCalc().addToken("2", 1, getIndex() + 1);
-            updateView(2, "^2");
-        }
+    private OnClickListener sqrBtn = v -> {
+        getCalc().addToken("^", 1, getIndex());
+        getCalc().addToken("2", 1, getIndex() + 1);
+        updateView(2, "^2");
     };
 
     private OnClickListener copyBtn = new OnClickListener() {
@@ -371,6 +304,54 @@ public class fnEntry extends Activity {
             appState.getCopy(getCalc());
             fns[fnState].setText(getCalc().viewStr);
             fns[fnState].setSelection(getIndex());
+        }
+    };
+
+    private OnClickListener shiftButtonClick = v -> {
+        if(state == 0) {
+            Button n = findViewById(R.id.del);
+            n.setOnClickListener(delBtn);
+            n.setText("del");
+            n = findViewById(R.id.sin);
+            n.setOnClickListener(makeFnClickListener("Arcsin", "arcsin"));
+            n.setText("arcsin");
+            n.setTextSize(14);
+            n = findViewById(R.id.cos);
+            n.setOnClickListener(makeFnClickListener("Arccos", "arccos"));
+            n.setTextSize(14);
+            n.setText("arccos");
+            n = findViewById(R.id.tan);
+            n.setOnClickListener(makeFnClickListener("Arctan", "arctan"));
+            n.setText("arctan");
+            n.setTextSize(14);
+            n = findViewById(R.id.copy);
+            n.setOnClickListener(copyBtn);
+            n.setText("copy");
+            shift.setBackgroundResource(R.drawable.btn_shift_pressed);
+            shift.setTextColor(ContextCompat.getColor(this, R.color.dark));
+            state = 1;
+        } else {
+            Button n = findViewById(R.id.del);
+            n.setText("bspc");
+            n.setOnClickListener(bspcBtn);
+            n = findViewById(R.id.sin);
+            n.setOnClickListener(makeFnClickListener("Sin", "sin"));
+            n.setText("sin");
+            n.setTextSize(18);
+            n = findViewById(R.id.cos);
+            n.setOnClickListener(makeFnClickListener("Cos", "cos"));
+            n.setText("cos");
+            n.setTextSize(18);
+            n = findViewById(R.id.tan);
+            n.setOnClickListener(makeFnClickListener("Tan", "tan"));
+            n.setText("tan");
+            n.setTextSize(18);
+            n = findViewById(R.id.copy);
+            n.setOnClickListener(pasteBtn);
+            n.setText("paste");
+            shift.setBackgroundResource(R.drawable.btn_shift_normal);
+            shift.setTextColor(ContextCompat.getColor(this, R.color.light));
+            state = 0;
         }
     };
 
@@ -389,13 +370,8 @@ public class fnEntry extends Activity {
         dialog.setTitle("Function Entry Help");
         ((TextView) dialog.findViewById(R.id.calchelp_text)).setText(help_text);
         dialog.setCancelable(true);
-        Button n = (Button) dialog.findViewById(R.id.calchelp_ret);
-        n.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.cancel();
-            }
-        });
+        Button n = dialog.findViewById(R.id.calchelp_ret);
+        n.setOnClickListener(v -> dialog.cancel());
         dialog.show();
     }
 

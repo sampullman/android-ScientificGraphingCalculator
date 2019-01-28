@@ -3,7 +3,7 @@ package com.threeDBJ.calcAppLib;
 import android.view.MotionEvent;
 import android.util.AttributeSet;
 import android.content.Context;
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.ViewPager;
 
 public class CalcViewPager extends ViewPager {
 

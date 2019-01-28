@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -95,7 +95,7 @@ public class GraphCalc extends Fragment {
     private OnClickListener traceBtn = new OnClickListener() {
         public void onClick(View v) {
             graph.trace();
-            Button trace = (Button) v.findViewById(R.id.graph_trace);
+            Button trace = v.findViewById(R.id.graph_trace);
             if(graph.graphMode == graph.TRACE) {
                 trace.setBackgroundResource(R.drawable.abs__btn_cab_done_pressed_holo_light);
             } else {

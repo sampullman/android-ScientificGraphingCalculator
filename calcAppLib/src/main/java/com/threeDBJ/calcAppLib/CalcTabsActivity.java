@@ -4,28 +4,23 @@ import android.content.ActivityNotFoundException;
 import android.os.Bundle;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar.TabListener;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.FragmentManager;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar.Tab;
-import android.support.v7.app.ActionBar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
+import timber.log.Timber;
 
 public class CalcTabsActivity extends AppCompatActivity {
 
@@ -34,9 +29,9 @@ public class CalcTabsActivity extends AppCompatActivity {
     int prevMenu = -1;
 
     CalcTabsAdapter mCalcTabsAdapter;
-    @BindView(R2.id.calc_pager) CalcViewPager viewPager;
-    @BindView(R2.id.toolbar) Toolbar toolBar;
-    @BindView(R2.id.tabs) TabLayout tabs;
+    CalcViewPager viewPager;
+    Toolbar toolBar;
+    TabLayout tabs;
 
     public static final String PREFS_NAME = "SciGraphPrefsFile";
 
@@ -48,7 +43,9 @@ public class CalcTabsActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_tabs);
-        ButterKnife.bind(this);
+        viewPager = findViewById(R.id.calc_pager);
+        toolBar = findViewById(R.id.toolbar);
+        tabs = findViewById(R.id.tabs);
         //bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
         setSupportActionBar(toolBar);
 
@@ -67,7 +64,7 @@ public class CalcTabsActivity extends AppCompatActivity {
     @Override
     public final boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        int item = mCalcTabsAdapter.curItem;
+        int item = viewPager.getCurrentItem();
         Timber.e("sfsfds %d", item);
         if(prevMenu == item) {
             return true;
@@ -90,7 +87,7 @@ public class CalcTabsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R2.id.buy_adfree) {
+        if(item.getItemId() == R.id.buy_adfree) {
             final String pkgName = "com.threeDBJ.calcApp";
             Intent intent = new Intent(Intent.ACTION_VIEW);
             try {
