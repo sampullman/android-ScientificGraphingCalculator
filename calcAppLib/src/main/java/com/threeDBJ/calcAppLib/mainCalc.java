@@ -27,9 +27,10 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 //import calc.*;
 import com.threeDBJ.calcAppLib.cliCalc.*;
+import com.threeDBJ.calcAppLib.ListDialogFragment.ListDialogCallback;
 import android.util.Log;
 
-public class mainCalc extends Fragment {
+public class mainCalc extends Fragment implements ListDialogCallback {
 
     public static final int UNIQUE_ID=1;
 
@@ -638,7 +639,8 @@ public class mainCalc extends Fragment {
         }
     };
 
-    void reportListDialogResult(int ind) {
+    @Override
+    public void reportListDialogResult(int ind) {
         addCalcFn(extra_fns[ind], extra_fns[ind]);
     }
 
@@ -647,22 +649,20 @@ public class mainCalc extends Fragment {
     }
 
     private void showExtraFnsMenu(FragmentManager fm) {
-        CalcApp.showListDialog(fm, CalcTabsActivity.CALC_TAB, "Extra Functions", extra_fns);
+        CalcApp.showListDialog(fm, "Extra Functions", extra_fns, this);
     }
 
     private void registerPreferenceListener() {
-        listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                if("rounding".equals(key)) {
-                    try {
-                        int newRnd = Integer.parseInt(prefs.getString(key, "6"));
-                        if (newRnd > 0 && newRnd <= 12)
-                            appState.setGlobalRounding(newRnd);
-                    } catch (Exception e) {
-                    }
-                } else if("angle_rad".equals(key)) {
-                    appState.setGlobalAngleMode(prefs.getBoolean(key, true));
+        listener = (prefs, key) -> {
+            if ("rounding".equals(key)) {
+                try {
+                    int newRnd = Integer.parseInt(prefs.getString(key, "6"));
+                    if (newRnd > 0 && newRnd <= 12)
+                        appState.setGlobalRounding(newRnd);
+                } catch (Exception e) {
                 }
+            } else if ("angle_rad".equals(key)) {
+                appState.setGlobalAngleMode(prefs.getBoolean(key, true));
             }
         };
         prefs.registerOnSharedPreferenceChangeListener(listener);

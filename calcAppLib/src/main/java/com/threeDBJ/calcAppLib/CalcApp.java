@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.threeDBJ.calcAppLib.cliCalc.*;
+import com.threeDBJ.calcAppLib.ListDialogFragment.ListDialogCallback;
 
 public class CalcApp extends Application {
 
@@ -127,7 +128,7 @@ public class CalcApp extends Application {
         String title;
         for(int i = 0; i < nFns; i += 1) {
             if(!graphCalcs[i].empty()) {
-                title = "Fn" + Integer.toString(i + 1) + "(x):";
+                title = String.format("Fn %s(x):", i + 1);
                 n = graphCalcs[i].calcZeros(zeros[i], graph.getXLeft(), graph.getXRight(),
                         graph.getYBot(), graph.getYTop(),
                         graph.getXMin(), graph.getXMax(),
@@ -253,9 +254,9 @@ public class CalcApp extends Application {
         newFragment.show(ft, "dialog");
     }
 
-    public static void showListDialog(FragmentManager fm, int callerId, String title, String[] body) {
+    public static void showListDialog(FragmentManager fm, String title, String[] body, ListDialogCallback callback) {
         FragmentTransaction ft = CalcApp.removePrevDialog(fm);
-        DialogFragment newFragment = ListDialogFragment.newInstance(callerId, title, body);
+        DialogFragment newFragment = ListDialogFragment.newInstance(title, body, callback);
         newFragment.show(ft, "dialog");
     }
 

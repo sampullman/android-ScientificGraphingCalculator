@@ -8,11 +8,10 @@
                  android:theme="@style/AppTheme">
 
         <activity
-            android:name="com.threeDBJ.calcAppPaid.CalcAppPaid"
+            android:name="com.threeDBJ.calcAppLib.CalcTabsActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
-            android:theme="Theme.AppCompat.NoActionBar"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
