@@ -1,4 +1,4 @@
-package com.threeDBJ.calcAppLib;
+package com.threeDBJ.calcAppLib.view;
 
 import android.content.Context;
 import android.inputmethodservice.Keyboard;
@@ -8,8 +8,6 @@ import android.util.AttributeSet;
 import android.view.inputmethod.InputMethodSubtype;
 
 public class NullKeyboardView extends KeyboardView {
-
-    static final int KEYCODE_OPTIONS = -100;
 
     public NullKeyboardView(Context context, AttributeSet attrs) {
         super(context, attrs);

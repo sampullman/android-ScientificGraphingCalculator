@@ -129,7 +129,7 @@
 	android:layout_width="0dp"
 	android:layout_weight="0.6"
 	android:background="#FF000000">
-      <com.threeDBJ.calcAppLib.CalcEditText
+      <com.threeDBJ.calcAppLib.view.CalcEditText
 	  android:id="@+id/io"
 	  android:layout_gravity="center"
 	  android:layout_width="match_parent"

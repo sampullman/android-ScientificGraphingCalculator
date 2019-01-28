@@ -1,19 +1,21 @@
-package com.threeDBJ.calcAppLib;
+package com.threeDBJ.calcAppLib.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
-public class TextDialogFragment extends DialogFragment {
-    String title="", text;
+import com.threeDBJ.calcAppLib.R;
 
-    static TextDialogFragment newInstance(String title, String text) {
+public class TextDialogFragment extends DialogFragment {
+    private String title="", text;
+
+    public static TextDialogFragment newInstance(String title, String text) {
         TextDialogFragment f = new TextDialogFragment();
 
         // Supply num input as an argument.
@@ -28,27 +30,26 @@ public class TextDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        title = getArguments().getString("title");
-        text = getArguments().getString("text");
+        if(getArguments() != null) {
+            title = getArguments().getString("title", "");
+            text = getArguments().getString("text");
+        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
         View v = inflater.inflate(R.layout.text_fragment_dialog, container, false);
 
-        TextView tv = (TextView) v.findViewById(R.id.text);
+        TextView tv = v.findViewById(R.id.text);
         tv.setText(text);
 
         getDialog().setTitle(title);
 
         // Watch for button clicks.
-        Button b = (Button)v.findViewById(R.id.cancel);
-        b.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        Button b = v.findViewById(R.id.cancel);
+        b.setOnClickListener(view -> dismiss());
 
         return v;
     }

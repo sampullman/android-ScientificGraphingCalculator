@@ -12,7 +12,7 @@
       android:theme="@style/Theme.Sherlock"
       android:icon="@drawable/ic_main">
     <service
-	android:name="SoftKeyboard"
+	android:name=".view.SoftKeyboard"
 	android:permission="android.permission.BIND_INPUT_METHOD">
       <intent-filter>
 	<action android:name="android.view.InputMethod" />

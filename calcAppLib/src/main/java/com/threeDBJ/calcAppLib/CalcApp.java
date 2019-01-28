@@ -15,7 +15,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.threeDBJ.calcAppLib.cliCalc.*;
-import com.threeDBJ.calcAppLib.ListDialogFragment.ListDialogCallback;
+import com.threeDBJ.calcAppLib.view.ListDialogFragment;
+import com.threeDBJ.calcAppLib.view.ListDialogFragment.ListDialogCallback;
+import com.threeDBJ.calcAppLib.view.TextDialogFragment;
 
 public class CalcApp extends Application {
 

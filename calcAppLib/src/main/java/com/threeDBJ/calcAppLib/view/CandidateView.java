@@ -1,4 +1,4 @@
-package com.threeDBJ.calcAppLib;
+package com.threeDBJ.calcAppLib.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -31,6 +31,9 @@ public class CandidateView extends View {
             super.onDraw(canvas);
         }
     }
+
+    @Override
+    public boolean performClick() { return super.performClick(); }
 
     @Override
     public boolean onTouchEvent(MotionEvent me) {

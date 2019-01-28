@@ -1,10 +1,12 @@
-package com.threeDBJ.calcAppLib;
+package com.threeDBJ.calcAppLib.view;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 public class ListDialogFragment extends DialogFragment {
@@ -17,7 +19,7 @@ public class ListDialogFragment extends DialogFragment {
         void reportListDialogResult(int index);
     }
 
-    static ListDialogFragment newInstance(String title, String[] items, ListDialogCallback callback) {
+    public static ListDialogFragment newInstance(String title, String[] items, ListDialogCallback callback) {
         ListDialogFragment f = new ListDialogFragment();
         f.callback = callback;
         Bundle args = new Bundle();
@@ -30,22 +32,26 @@ public class ListDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        title = getArguments().getString("title");
-	    items = getArguments().getStringArray("items");
+        if(getArguments() != null) {
+            title = getArguments().getString("title");
+            items = getArguments().getStringArray("items");
+        }
     }
 
-    @Override
+    @Override @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-	final ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, items);
-	return new AlertDialog.Builder(getActivity())
+        Activity a = getActivity();
+
+        final ArrayAdapter<String> adapter =
+            new ArrayAdapter<>(a, android.R.layout.simple_list_item_1, items);
+
+        return new AlertDialog.Builder(a)
             .setCancelable(true)
             .setTitle(title)
-            .setAdapter(adapter, (dialog, which) -> {
-                callback.reportListDialogResult(which);
-            })
-            .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
-			dialog.dismiss();
-		    })
+            .setAdapter(adapter, (dialog, which) ->
+                callback.reportListDialogResult(which)
+            )
+            .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
             .create();
     }
 

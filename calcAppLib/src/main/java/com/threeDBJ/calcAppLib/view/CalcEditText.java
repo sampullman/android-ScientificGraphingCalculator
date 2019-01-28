@@ -1,10 +1,10 @@
-package com.threeDBJ.calcAppLib;
+package com.threeDBJ.calcAppLib.view;
 
-import android.widget.EditText;
+import androidx.appcompat.widget.AppCompatEditText;
 import android.content.Context;
 import android.util.AttributeSet;
 
-public class CalcEditText extends EditText {
+public class CalcEditText extends AppCompatEditText {
 
     SelectionChangedListener sListener;
 
@@ -22,8 +22,8 @@ public class CalcEditText extends EditText {
         sListener = l;
     }
 
-    interface SelectionChangedListener {
-        public void onSelectionChanged(int selStart, int selEnd);
+    public interface SelectionChangedListener {
+        void onSelectionChanged(int selStart, int selEnd);
     }
 
 }

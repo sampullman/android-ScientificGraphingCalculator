@@ -72,19 +72,19 @@
 
 # view res/layout/calc.xml #generated:71
 # view res/layout/calc2.xml #generated:132
--keep class com.threeDBJ.calcAppLib.CalcEditText { <init>(...); }
+-keep class com.threeDBJ.calcAppLib.view.CalcEditText { <init>(...); }
 
 # view res/layout/graph.xml #generated:8
 -keep class com.threeDBJ.calcAppLib.GraphView { <init>(...); }
 
 # view res/layout/null_keyboard.xml #generated:2
--keep class com.threeDBJ.calcAppLib.NullKeyboardView { <init>(...); }
+-keep class com.threeDBJ.calcAppLib.view.NullKeyboardView { <init>(...); }
 
 # view AndroidManifest.xml #generated:36
 -keep class com.threeDBJ.calcAppLib.Settings { <init>(...); }
 
 # view AndroidManifest.xml #generated:14
--keep class com.threeDBJ.calcAppLib.SoftKeyboard { <init>(...); }
+-keep class com.threeDBJ.calcAppLib.view.SoftKeyboard { <init>(...); }
 
 # view AndroidManifest.xml #generated:31
 -keep class com.threeDBJ.calcAppLib.fnEntry { <init>(...); }

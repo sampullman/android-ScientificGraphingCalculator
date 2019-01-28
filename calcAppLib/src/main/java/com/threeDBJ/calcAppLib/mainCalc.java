@@ -27,7 +27,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import com.threeDBJ.calcAppLib.cliCalc.*;
-import com.threeDBJ.calcAppLib.ListDialogFragment.ListDialogCallback;
+import com.threeDBJ.calcAppLib.view.CalcEditText;
+import com.threeDBJ.calcAppLib.view.ListDialogFragment.ListDialogCallback;
 import android.util.Log;
 
 import timber.log.Timber;
@@ -145,7 +146,9 @@ public class mainCalc extends Fragment implements ListDialogCallback {
     private void setup () {
         appState = (CalcApp)getActivity().getApplicationContext();
         this.calc = appState.getMainCalc ();
-        if(calc == null) Log.e("calc", "null main calc");
+        if(calc == null) {
+            Timber.e("null main calc");
+        }
         this.io = v.findViewById(R.id.io);
         io.setText(calc.viewStr);
         io.setOnClickListener (ioSelect);

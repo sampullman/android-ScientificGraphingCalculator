@@ -1,21 +1,14 @@
-package com.threeDBJ.calcAppLib;
+package com.threeDBJ.calcAppLib.view;
 
 import android.inputmethodservice.InputMethodService;
-import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
-import android.text.InputType;
-import android.text.method.MetaKeyKeyListener;
-import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputConnection;
-import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.threeDBJ.calcAppLib.R;
 
 /**
  * Example of writing an input method for a soft keyboard.  This code is
@@ -26,18 +19,15 @@ import java.util.List;
  */
 public class SoftKeyboard extends InputMethodService
         implements KeyboardView.OnKeyboardActionListener {
-    static final boolean DEBUG = false;
-    private InputMethodManager mInputMethodManager;
 
-    private NullKeyboardView mInputView;
-    private CandidateView mCandidateView;
+    private NullKeyboardView inputView;
+    private CandidateView candidateView;
     /**
      * Main initialization of the input method component.  Be sure to call
      * to super class.
      */
     @Override public void onCreate() {
         super.onCreate();
-        mInputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
     }
 
     /**
@@ -54,11 +44,11 @@ public class SoftKeyboard extends InputMethodService
      * a configuration change.
      */
     @Override public View onCreateInputView() {
-        mInputView = (NullKeyboardView) getLayoutInflater().inflate(
+        inputView = (NullKeyboardView) getLayoutInflater().inflate(
                 R.layout.null_keyboard, null);
-        mInputView.setOnKeyboardActionListener(this);
-        mInputView.setKeyboard(null);
-        return mInputView;
+        inputView.setOnKeyboardActionListener(this);
+        inputView.setKeyboard(null);
+        return inputView;
     }
 
     /**
@@ -66,8 +56,8 @@ public class SoftKeyboard extends InputMethodService
      * be generated, like {@link #onCreateInputView}.
      */
     @Override public View onCreateCandidatesView() {
-        mCandidateView = new CandidateView(this);
-        return mCandidateView;
+        candidateView = new CandidateView(this);
+        return candidateView;
     }
 
     /**

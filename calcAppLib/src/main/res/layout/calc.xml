@@ -68,7 +68,7 @@
       android:layout_width="match_parent"
       android:layout_height="2px"
       android:background="@color/dark_gray" />
-  <com.threeDBJ.calcAppLib.CalcEditText
+  <com.threeDBJ.calcAppLib.view.CalcEditText
       android:id="@+id/io"
       android:layout_gravity="center"
       android:layout_width="match_parent"
