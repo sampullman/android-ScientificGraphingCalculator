@@ -87,5 +87,5 @@
 -keep class com.threeDBJ.calcAppLib.view.SoftKeyboard { <init>(...); }
 
 # view AndroidManifest.xml #generated:31
--keep class com.threeDBJ.calcAppLib.fnEntry { <init>(...); }
+-keep class com.threeDBJ.calcAppLib.FnEntry { <init>(...); }
 

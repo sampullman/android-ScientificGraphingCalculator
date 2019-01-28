@@ -431,7 +431,7 @@ public class mainCalc extends Fragment implements ListDialogCallback {
         }
     }
 
-    // TODO -- abstract (+ fnEntry => CalcApp or singleton)
+    // TODO -- abstract (+ FnEntry => CalcApp or singleton)
     private int getColor(int res) {
         return getActivity().getResources().getColor(res);
     }

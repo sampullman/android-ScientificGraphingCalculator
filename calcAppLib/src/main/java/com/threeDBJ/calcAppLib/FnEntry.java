@@ -20,7 +20,7 @@ import android.content.pm.ActivityInfo;
 import android.widget.TextView;
 import android.app.Dialog;
 
-public class fnEntry extends Activity {
+public class FnEntry extends Activity {
 
     int NUM_FNS;
 
@@ -212,7 +212,7 @@ public class fnEntry extends Activity {
         public void onClick(View v) {
             TextView io = (TextView) v;
             setIndex(io.getSelectionStart());
-            InputMethodManager imm = (InputMethodManager) fnEntry.this.getSystemService(
+            InputMethodManager imm = (InputMethodManager) FnEntry.this.getSystemService(
                     Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(io.getWindowToken(), 0);
         }
@@ -365,7 +365,7 @@ public class fnEntry extends Activity {
     */
 
     private void showHelp() {
-        final Dialog dialog = new Dialog(fnEntry.this);
+        final Dialog dialog = new Dialog(FnEntry.this);
         dialog.setContentView(R.layout.calc_help);
         dialog.setTitle("Function Entry Help");
         ((TextView) dialog.findViewById(R.id.calchelp_text)).setText(help_text);

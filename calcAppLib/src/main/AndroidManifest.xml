@@ -7,6 +7,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
+        <activity
+            android:name="com.threeDBJ.calcAppLib.FnEntry"
+        />
     </application>
 
 </manifest>

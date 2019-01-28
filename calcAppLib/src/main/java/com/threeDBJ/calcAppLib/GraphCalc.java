@@ -71,7 +71,7 @@ public class GraphCalc extends Fragment {
     private OnClickListener fnsBtn = new OnClickListener() {
         public void onClick(View v) {
             graph.graphMode = graph.GRAPH;
-            Intent myIntent = new Intent(v.getContext(), fnEntry.class);
+            Intent myIntent = new Intent(v.getContext(), FnEntry.class);
             startActivityForResult(myIntent, 0);
         }
     };

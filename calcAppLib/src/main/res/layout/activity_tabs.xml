@@ -2,25 +2,21 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     style="@style/view_full">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/toolbar" />
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            style="@style/toolbar" />
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/bar_background"
-            app:tabSelectedTextColor="@color/light"
-            app:tabTextColor="@color/dark_gray"
-            app:tabMode="fixed"
-            app:tabGravity="fill" />
-    </LinearLayout>
+        android:background="@color/bar_background"
+        app:tabSelectedTextColor="@color/light"
+        app:tabTextColor="@color/dark_gray"
+        app:tabMode="fixed"
+        app:tabGravity="fill" />
 
     <com.threeDBJ.calcAppLib.CalcViewPager
         android:id="@+id/calc_pager"

@@ -29,7 +29,7 @@
       </intent-filter>
     </activity>
     <activity
-	android:name="com.threeDBJ.calcAppLib.fnEntry"
+	android:name="com.threeDBJ.calcAppLib.FnEntry"
 	android:label="@string/fn_entry"
 	android:windowSoftInputMode="stateAlwaysHidden"
 	android:configChanges="keyboardHidden|orientation" />

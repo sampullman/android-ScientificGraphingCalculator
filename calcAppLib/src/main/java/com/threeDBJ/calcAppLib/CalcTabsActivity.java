@@ -28,12 +28,10 @@ public class CalcTabsActivity extends AppCompatActivity {
 
     int prevMenu = -1;
 
-    CalcTabsAdapter mCalcTabsAdapter;
+    CalcTabsAdapter calcTabsAdapter;
     CalcViewPager viewPager;
     Toolbar toolBar;
     TabLayout tabs;
-
-    public static final String PREFS_NAME = "SciGraphPrefsFile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +52,11 @@ public class CalcTabsActivity extends AppCompatActivity {
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        mCalcTabsAdapter = new CalcTabsAdapter(getSupportFragmentManager());
-        mCalcTabsAdapter.addFragment(new mainCalc(), "MAIN");
-        mCalcTabsAdapter.addFragment(new ConvCalc(), "CONVERSION");
-        mCalcTabsAdapter.addFragment(new GraphCalc(), "GRAPH");
-        viewPager.setAdapter(mCalcTabsAdapter);
+        calcTabsAdapter = new CalcTabsAdapter(getSupportFragmentManager());
+        calcTabsAdapter.addFragment(new mainCalc(), "MAIN");
+        calcTabsAdapter.addFragment(new ConvCalc(), "CONVERSION");
+        calcTabsAdapter.addFragment(new GraphCalc(), "GRAPH");
+        viewPager.setAdapter(calcTabsAdapter);
     }
 
     @Override
@@ -99,15 +97,15 @@ public class CalcTabsActivity extends AppCompatActivity {
         } else {
             switch(viewPager.getCurrentItem()) {
             case CALC_TAB:
-                mainCalc calc = (mainCalc) mCalcTabsAdapter.getItem(CALC_TAB);
+                mainCalc calc = (mainCalc) calcTabsAdapter.getItem(CALC_TAB);
                 calc.handleOptionsItemSelected(getSupportFragmentManager(), item.getItemId());
                 break;
             case CONV_TAB:
-                ConvCalc conv = (ConvCalc) mCalcTabsAdapter.getItem(CONV_TAB);
+                ConvCalc conv = (ConvCalc) calcTabsAdapter.getItem(CONV_TAB);
                 conv.handleOptionsItemSelected(getSupportFragmentManager(), item.getItemId());
                 break;
             case GRAPH_TAB:
-                GraphCalc graph = (GraphCalc) mCalcTabsAdapter.getItem(GRAPH_TAB);
+                GraphCalc graph = (GraphCalc) calcTabsAdapter.getItem(GRAPH_TAB);
                 graph.handleOptionsItemSelected(getSupportFragmentManager(), item.getItemId());
                 break;
             }
@@ -116,31 +114,32 @@ public class CalcTabsActivity extends AppCompatActivity {
     }
 
     class CalcTabsAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
+        private final List<Fragment> fragmentList = new ArrayList<>();
+        private final List<String> fragmentTitleList = new ArrayList<>();
 
-        public CalcTabsAdapter(FragmentManager manager) {
+        CalcTabsAdapter(FragmentManager manager) {
             super(manager);
         }
 
         @Override
         public Fragment getItem(int position) {
-            return mFragmentList.get(position);
+            Timber.e("GOT ITEM %s", position);
+            return fragmentList.get(position);
         }
 
         @Override
         public int getCount() {
-            return mFragmentList.size();
+            return fragmentList.size();
         }
 
-        public void addFragment(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
+        void addFragment(Fragment fragment, String title) {
+            fragmentList.add(fragment);
+            fragmentTitleList.add(title);
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
+            return fragmentTitleList.get(position);
         }
     }
 
