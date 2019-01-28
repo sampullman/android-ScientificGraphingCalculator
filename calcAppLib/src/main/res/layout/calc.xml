@@ -99,13 +99,13 @@
 	android:background="@drawable/btn_shift"
 	android:text="shift"/>
     <view
-	class="com.threeDBJ.calcAppLib.AutoRepeatButton"
+	class="com.threeDBJ.calcAppLib.view.AutoRepeatButton"
 	android:id="@+id/left"
 	style="@style/btn_even"
 	android:background="@drawable/left"
 	android:text="" />
     <view
-	class="com.threeDBJ.calcAppLib.AutoRepeatButton"
+	class="com.threeDBJ.calcAppLib.view.AutoRepeatButton"
 	android:id="@+id/right"
 	style="@style/btn_even"
 	android:background="@drawable/right"

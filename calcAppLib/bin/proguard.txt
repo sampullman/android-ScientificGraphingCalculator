@@ -65,7 +65,7 @@
 
 # view res/layout/calc.xml #generated:101
 # view res/layout/calc.xml #generated:107
--keep class com.threeDBJ.calcAppLib.AutoRepeatButton { <init>(...); }
+-keep class com.threeDBJ.calcAppLib.view.AutoRepeatButton { <init>(...); }
 
 # view AndroidManifest.xml #generated:9
 -keep class com.threeDBJ.calcAppLib.CalcApp { <init>(...); }
