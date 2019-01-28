@@ -1,11 +1,27 @@
-<manifest package="com.threeDBJ.calcApp"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest package="com.threeDBJ.calcAppPaid"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <application android:allowBackup="true"
-                 android:icon="@mipmap/ic_launcher"
-                 android:label="@string/app_name"
-                 android:supportsRtl="true"
-                 android:theme="@style/AppTheme">
+    <application
+        android:name="com.threeDBJ.calcAppLib.CalcApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name="com.threeDBJ.calcAppLib.CalcTabsActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
 
     </application>
 
