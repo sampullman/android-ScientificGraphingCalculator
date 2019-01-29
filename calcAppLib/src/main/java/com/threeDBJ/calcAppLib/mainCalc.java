@@ -29,6 +29,8 @@ import android.view.ViewGroup;
 import com.threeDBJ.calcAppLib.cliCalc.*;
 import com.threeDBJ.calcAppLib.view.CalcEditText;
 import com.threeDBJ.calcAppLib.view.ListDialogFragment.ListDialogCallback;
+import com.threeDBJ.calcAppLib.view.calc.CalcPage;
+
 import android.util.Log;
 
 import timber.log.Timber;
@@ -68,11 +70,13 @@ public class mainCalc extends Fragment implements ListDialogCallback {
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         registerPreferenceListener();
 
-        if(config.orientation == 1)
+        if(config.orientation == 1) {
             v = inflater.inflate(R.layout.calc, container, false);
-        else if(config.orientation == 2)
+            ViewGroup vg = v.findViewById(R.id.calc_root);
+            vg.addView(new CalcPage().getView(getActivity()), 0);
+        } else if(config.orientation == 2) {
             v = inflater.inflate(R.layout.calc2, container, false);
-
+        }
         return v;
     }
 

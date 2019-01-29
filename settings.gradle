@@ -1,2 +1,8 @@
 include ':calcAppLib', ':calcAppLib'
 include ':calcAppFree', ':calcAppPaid'
+
+includeBuild('/home/sam/git/android/android-viewbuilder'){
+    dependencySubstitution {
+        substitute module('com.sampullman.viewbuilder:android-viewbuilder') with project(':viewbuilder')
+    }
+}
