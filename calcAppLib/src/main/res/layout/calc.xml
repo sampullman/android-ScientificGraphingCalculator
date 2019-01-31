@@ -6,52 +6,6 @@
     android:layout_height="match_parent"
 	android:id="@+id/calc_root"
     android:weightSum="10.9" >
-  <TextView
-      android:layout_width="match_parent"
-      android:layout_height="2px"
-      android:background="@color/dark_gray" />
-  <LinearLayout
-      android:orientation="horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:layout_weight="0.7">
-    <Button
-	android:id="@+id/prev_input2"
-	style="@style/prev_result"
-	android:paddingLeft="6dp"/>
-    <TextView
-	android:id="@+id/eq2"
-	style="@style/prev"
-	android:text=" = "/>
-    <Button
-	android:id="@+id/prev_result2"
-	style="@style/prev_result" />
-  </LinearLayout>
-  <TextView
-      android:layout_width="match_parent"
-      android:layout_height="2px"
-      android:background="@color/dark_gray" />
-  <LinearLayout
-      android:orientation="horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:layout_weight="0.7">
-    <Button
-	android:id="@+id/prev_input1"
-	style="@style/prev_result"
-	android:paddingLeft="6dp" />
-    <TextView
-	android:id="@+id/eq1"
-	style="@style/prev"
-	android:text=" = "/>
-    <Button
-	android:id="@+id/prev_result1"
-	style="@style/prev_result" />
-  </LinearLayout>
-  <TextView
-      android:layout_width="match_parent"
-      android:layout_height="2px"
-      android:background="@color/dark_gray" />
   <com.threeDBJ.calcAppLib.view.CalcEditText
       android:id="@+id/io"
       android:layout_gravity="center"

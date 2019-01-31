@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
 import android.widget.TextView;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -30,12 +31,13 @@ import com.threeDBJ.calcAppLib.cliCalc.*;
 import com.threeDBJ.calcAppLib.view.CalcEditText;
 import com.threeDBJ.calcAppLib.view.ListDialogFragment.ListDialogCallback;
 import com.threeDBJ.calcAppLib.view.calc.CalcPage;
-
-import android.util.Log;
+import com.threeDBJ.calcAppLib.view.calc.CalcPage.CalcPageInterface;
 
 import timber.log.Timber;
 
-public class mainCalc extends Fragment implements ListDialogCallback {
+import static com.threeDBJ.calcAppLib.view.calc.CalcPage.ANSWER_COUNT;
+
+public class mainCalc extends Fragment implements ListDialogCallback, CalcPageInterface {
 
     public static final int UNIQUE_ID=1;
 
@@ -46,11 +48,8 @@ public class mainCalc extends Fragment implements ListDialogCallback {
     private SharedPreferences prefs;
     private OnSharedPreferenceChangeListener listener;
 
-    private Button[] prevResults = new Button[3];
-    private Button[] prevInputs = new Button[3];
-    private TextView[] eqs = new TextView[3];
+    private CalcPage calcPage;
     private TextView onTheFly;
-    private CalcEditText io;
     private Calculator calc;
     private int state = 0;
     private Button shift;
@@ -71,9 +70,9 @@ public class mainCalc extends Fragment implements ListDialogCallback {
         registerPreferenceListener();
 
         if(config.orientation == 1) {
-            v = inflater.inflate(R.layout.calc, container, false);
-            ViewGroup vg = v.findViewById(R.id.calc_root);
-            vg.addView(new CalcPage().getView(getActivity()), 0);
+            calcPage = new CalcPage(this);
+            v = calcPage.getView(getActivity());
+
         } else if(config.orientation == 2) {
             v = inflater.inflate(R.layout.calc2, container, false);
         }
@@ -82,7 +81,7 @@ public class mainCalc extends Fragment implements ListDialogCallback {
 
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setup ();
+        setup();
         try {
             appState.setGlobalRounding(Integer.parseInt(prefs.getString("rounding", "6")));
         } catch(Exception e) {
@@ -95,9 +94,8 @@ public class mainCalc extends Fragment implements ListDialogCallback {
             calc.result = savedInstanceState.getString("result_string");
             if(calc.viewStr == null) calc.viewStr = "";
             if(calc.result == null) calc.result = "";
-            io.setText(calc.viewStr);
             setIndex(savedInstanceState.getInt("selection_index"));
-            io.setSelection(getIndex());
+            calcPage.setCalc(calc.viewStr, getIndex());
             // if(savedInstanceState.getStringArrayList("old_inputs") != null) {
             // 	calc.oldViews = savedInstanceState.getStringArrayList("old_inputs");
             // }
@@ -120,11 +118,7 @@ public class mainCalc extends Fragment implements ListDialogCallback {
         super.onResume();
         if(calc != null) {
             updatePrevResults();
-            if(io != null) {
-                int ind = getIndex();
-                io.setText(calc.viewStr);
-                io.setSelection(ind);
-            }
+            calcPage.setCalc(calc.viewStr, getIndex());
             if(onTheFly != null)
                 onTheFly.setText(calc.calcOnTheFly());
         }
@@ -147,46 +141,35 @@ public class mainCalc extends Fragment implements ListDialogCallback {
         }
     }
 
+    @Override
+    public void answerInputClick(int row) {
+        if (calc.oldViews.size() > row) {
+            calc.lastInp(calc.oldViews.size() - (row + 1));
+            setIndex(calc.viewStr.length());
+            calcPage.setCalc(calc.viewStr, getIndex());
+        }
+    }
+
+    @Override
+    public void answerClick(int row) {
+        if (calc.answers.size() > row) {
+            String ans = calc.lastAns(calc.answers.size() - (row + 1));
+            updateView(ans.length(), ans);
+        }
+    }
+
     private void setup () {
         appState = (CalcApp)getActivity().getApplicationContext();
-        this.calc = appState.getMainCalc ();
+        this.calc = appState.getMainCalc();
         if(calc == null) {
             Timber.e("null main calc");
         }
-        this.io = v.findViewById(R.id.io);
-        io.setText(calc.viewStr);
-        io.setOnClickListener (ioSelect);
-        io.addTextChangedListener(ioChanged);
-        io.setSelectionChangedListener((selStart, selEnd) -> {
-            Timber.e("calc %d %d",selStart, selEnd);
-            if(selStart == selEnd) {
-                setIndex(selStart);
-                //io.setSelection(
-            }
-        });
-
-        eqs[0] = v.findViewById(R.id.eq1);
-        eqs[1] = v.findViewById(R.id.eq2);
-        eqs[2] = v.findViewById(R.id.eq3);
-
-        prevResults[0] = v.findViewById(R.id.prev_result1);
-        prevResults[0].setOnClickListener(makePrevAnsListener(0));
-        prevResults[1] = v.findViewById(R.id.prev_result2);
-        prevResults[1].setOnClickListener(makePrevAnsListener(1));
-        prevResults[2] = v.findViewById(R.id.prev_result3);
-        prevResults[2].setOnClickListener(makePrevAnsListener(2));
-
-        prevInputs[0] = v.findViewById(R.id.prev_input1);
-        prevInputs[0].setOnClickListener(makePrevInputListener(0));
-        prevInputs[1] = v.findViewById(R.id.prev_input2);
-        prevInputs[1].setOnClickListener(makePrevInputListener(1));
-        prevInputs[2] = v.findViewById(R.id.prev_input3);
-        prevInputs[2].setOnClickListener(makePrevInputListener(2));
+        calcPage.setCalcText(calc.viewStr);
+        /*
 
         onTheFly = v.findViewById(R.id.on_the_fly);
-        io.requestFocus();
-
         setupButtons ();
+        */
     }
 
     private void setupButtons () {
@@ -276,38 +259,17 @@ public class mainCalc extends Fragment implements ListDialogCallback {
         if(newInd < 0) {
             newInd = calc.viewStr.length();
         }
-        io.setText(calc.viewStr);
         setIndex(newInd);
         Timber.e("calc updateView: %d %d", getIndex(), calc.viewStr.length());
-        io.setSelection(getIndex ());
+        calcPage.setCalc(calc.viewStr, getIndex());
     }
 
     private void setIndex (int ind) {
         calc.setViewIndex (ind);
     }
 
-    private int getIndex () {
+    private int getIndex() {
         return calc.getViewIndex ();
-    }
-
-    private OnClickListener makePrevAnsListener(final int n) {
-        return v -> {
-            if (calc.answers.size() > n) {
-                String ans = calc.lastAns(calc.answers.size() - (n + 1));
-                updateView(ans.length(), ans);
-            }
-        };
-    }
-
-    private OnClickListener makePrevInputListener(final int n) {
-        return v -> {
-            if (calc.oldViews.size() > n) {
-                calc.lastInp(calc.oldViews.size() - (n + 1));
-                io.setText(calc.viewStr);
-                setIndex(calc.viewStr.length());
-                io.setSelection(getIndex());
-            }
-        };
     }
 
     private OnClickListener makeClickListener(final String token,final String viewString) {
@@ -351,9 +313,8 @@ public class mainCalc extends Fragment implements ListDialogCallback {
             break;
         case PREV_ENTRY:
             calc.lastInp (item.getItemId ());
-            io.setText(calc.viewStr);
-            setIndex (calc.viewStr.length());
-            io.setSelection(getIndex());
+            setIndex(calc.viewStr.length());
+            calcPage.setCalc(calc.viewStr, getIndex());
             break;
         }
         return true;
@@ -447,20 +408,28 @@ public class mainCalc extends Fragment implements ListDialogCallback {
 
     private OnLongClickListener defaultLongClick = v -> true;
 
-    private OnClickListener ioSelect = new OnClickListener() {
-        public void onClick(View v) {
-            //setIndex (((TextView)v).getSelectionStart ());
-            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
-                    Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(io.getWindowToken(), 0);
+    @Override
+    public void calcInputClick(CalcEditText calcInput) {
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(calcInput.getWindowToken(), 0);
+    }
+
+    @Override
+    public void calcInputSelection(int start, int end) {
+        Timber.e("calc %d %d",start, end);
+        if(start == end) {
+            setIndex(start);
         }
-    };
+    }
 
     private OnClickListener leftBtn = new OnClickListener() {
         public void onClick(View v) {
-            setIndex (getIndex() - calc.bspcHelper(getIndex(),false));
-            if(getIndex() < 0) setIndex (calc.viewStr.length());
-            io.setSelection(getIndex());
+            setIndex(getIndex() - calc.bspcHelper(getIndex(),false));
+            if(getIndex() < 0) {
+                setIndex (calc.viewStr.length());
+            }
+            calcPage.setCalcSelection(getIndex());
         }
     };
 
@@ -468,7 +437,7 @@ public class mainCalc extends Fragment implements ListDialogCallback {
         public void onClick(View v) {
             setIndex (getIndex() + calc.delHelper(getIndex(),false));
             if(getIndex() > calc.viewStr.length()) setIndex (0);
-            io.setSelection(getIndex());
+            calcPage.setCalcSelection(getIndex());
         }
     };
 
@@ -478,9 +447,8 @@ public class mainCalc extends Fragment implements ListDialogCallback {
                 int delNum = calc.delHelper(getIndex(),true);
                 int ind = getIndex();
                 calc.viewStr = calc.viewStr.substring(0,getIndex()) +
-                        calc.viewStr.substring(getIndex()+delNum,calc.viewStr.length());
-                io.setText(calc.viewStr);
-                io.setSelection(ind);
+                        calc.viewStr.substring(getIndex() + delNum);
+                calcPage.setCalc(calc.viewStr, ind);
             }
         }
     };
@@ -492,9 +460,8 @@ public class mainCalc extends Fragment implements ListDialogCallback {
                 calc.viewStr = calc.viewStr.substring(0,getIndex()-bspcNum) +
                         calc.viewStr.substring(getIndex());
                 int newInd = getIndex() - bspcNum;
-                io.setText(calc.viewStr);
                 setIndex(newInd);
-                io.setSelection(getIndex());
+                calcPage.setCalc(calc.viewStr, getIndex());
             }
         }
     };
@@ -504,9 +471,8 @@ public class mainCalc extends Fragment implements ListDialogCallback {
             calc.tokens.clear();
             calc.tokenLens.clear();
             calc.viewStr = "";
-            setIndex (0);
-            io.setText(calc.viewStr);
-            io.setSelection(getIndex());
+            setIndex(0);
+            calcPage.setCalc(calc.viewStr, getIndex());
         }
     };
 
@@ -524,8 +490,7 @@ public class mainCalc extends Fragment implements ListDialogCallback {
             if(calc.viewStr != null && calc.viewStr.length() > 0) {
                 if(calc.execute()) {
                     setIndex (0);
-                    io.setText(calc.viewStr);
-                    io.setSelection(getIndex());
+                    calcPage.setCalc(calc.viewStr, getIndex());
                     onTheFly.setText(calc.result);
                     updatePrevResults();
                 } else {
@@ -542,13 +507,9 @@ public class mainCalc extends Fragment implements ListDialogCallback {
         } else {
             n = calc.answers.size() - 1;
         }
-        for(int i=0;i<prevResults.length;i+=1) {
+        for(int i=0; i < ANSWER_COUNT; i += 1) {
             if(n < 0) break;
-            prevResults[i].setText(calc.answers.get(n));
-            prevResults[i].setVisibility(View.VISIBLE);
-            eqs[i].setVisibility(View.VISIBLE);
-            prevInputs[i].setText(calc.oldViews.get(n));
-            prevInputs[i].setVisibility(View.VISIBLE);
+            calcPage.setAnswer(i, calc.oldViews.get(n), calc.answers.get(n));
             n -= 1;
         }
     }
@@ -566,9 +527,8 @@ public class mainCalc extends Fragment implements ListDialogCallback {
         public void onClick(View v) {
             //calc.tokenize(copy);
             appState.getCopy (calc);
-            io.setText (calc.viewStr);
             setIndex(calc.viewStr.length());
-            io.setSelection (getIndex ());
+            calcPage.setCalc(calc.viewStr, getIndex());
         }
     };
 
@@ -585,8 +545,7 @@ public class mainCalc extends Fragment implements ListDialogCallback {
             calc.viewStr = "1/("+calc.viewStr+")";
             calc.execute();
             setIndex (calc.viewStr.length());
-            io.setText(calc.viewStr);
-            io.setSelection(getIndex());
+            calcPage.setCalc(calc.viewStr, getIndex());
             onTheFly.setText(calc.result);
             updatePrevResults();
         }
@@ -605,8 +564,7 @@ public class mainCalc extends Fragment implements ListDialogCallback {
             calc.viewStr = "("+calc.viewStr+")/100.0";
             calc.execute();
             setIndex (calc.viewStr.length());
-            io.setText(calc.viewStr);
-            io.setSelection(getIndex());
+            calcPage.setCalc(calc.viewStr, getIndex());
             onTheFly.setText(calc.result);
             updatePrevResults();
         }
