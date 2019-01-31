@@ -1,11 +1,14 @@
 package com.threeDBJ.calcAppLib.view.calc;
 
 import android.app.Activity;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.threeDBJ.calcAppLib.R;
 import com.threeDBJ.calcAppLib.view.CalcEditText;
@@ -25,6 +28,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 public class CalcPage {
     private CalcPageInterface page;
     private CalcEditText calcInput;
+    private TextView resultText;
 
     public static int ANSWER_COUNT = 3;
     private LinearLayout[] answerRows = new LinearLayout[ANSWER_COUNT];
@@ -34,6 +38,7 @@ public class CalcPage {
         void answerInputClick(int row);
         void calcInputClick(CalcEditText calcInput);
         void calcInputSelection(int start, int end);
+        void calcInputAfterTextChanged();
     }
 
     public CalcPage(CalcPageInterface page) {
@@ -74,7 +79,11 @@ public class CalcPage {
         calcInput.setText(value);
     }
 
-    void answerRow(ViewGroup root, int index) {
+    public void setResult(String value) {
+        resultText.setText(value);
+    }
+
+    private void answerRow(ViewGroup root, int index) {
 
         LinearLayout row1 = new LinearLayoutBuilder()
             .horizontal()
@@ -127,6 +136,27 @@ public class CalcPage {
             .textSizeSp(26)
             .build(root);
         calcInput.requestFocus();
+        calcInput.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                page.calcInputAfterTextChanged();
+            }
+        });
+
+        resultText = new TextViewBuilder()
+            .inLinear()
+            .style(Style.MATCH)
+            .textSizeSp(26)
+            .color(R.color.light)
+            .gravity(CENTER)
+            .build(new LinearLayoutBuilder(Style.WIDE)
+                .inLinear()
+                .weight(0.8f)
+                .horizontal()
+                .build(root));
 
         return root;
     }

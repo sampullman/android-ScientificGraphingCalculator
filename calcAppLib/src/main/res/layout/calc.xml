@@ -6,29 +6,6 @@
     android:layout_height="match_parent"
 	android:id="@+id/calc_root"
     android:weightSum="10.9" >
-  <com.threeDBJ.calcAppLib.view.CalcEditText
-      android:id="@+id/io"
-      android:layout_gravity="center"
-      android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:layout_weight="1"
-      android:paddingLeft="8dp"
-      android:layout_marginBottom="6dp"
-      android:inputType="number"
-      android:textSize="26sp" />
-  <LinearLayout
-      android:orientation="horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:layout_weight="0.8">
-    <TextView
-	android:id="@+id/on_the_fly"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:textSize="26sp"
-	android:textColor="@color/light"
-	android:gravity="center" />
-  </LinearLayout>
   <LinearLayout
       style="@style/calc_row">
     <Button

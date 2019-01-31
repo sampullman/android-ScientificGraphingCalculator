@@ -49,7 +49,6 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
     private OnSharedPreferenceChangeListener listener;
 
     private CalcPage calcPage;
-    private TextView onTheFly;
     private Calculator calc;
     private int state = 0;
     private Button shift;
@@ -103,7 +102,7 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
             // 	calc.answers = savedInstanceState.getStringArrayList("old_answers");
             // }
             updatePrevResults();
-            onTheFly.setText(calc.calcOnTheFly());
+            calcPage.setResult(calc.calcOnTheFly());
         }
     }
 
@@ -119,8 +118,7 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         if(calc != null) {
             updatePrevResults();
             calcPage.setCalc(calc.viewStr, getIndex());
-            if(onTheFly != null)
-                onTheFly.setText(calc.calcOnTheFly());
+            calcPage.setResult(calc.calcOnTheFly());
         }
     }
 
@@ -167,7 +165,6 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         calcPage.setCalcText(calc.viewStr);
         /*
 
-        onTheFly = v.findViewById(R.id.on_the_fly);
         setupButtons ();
         */
     }
@@ -423,6 +420,14 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         }
     }
 
+    @Override
+    public void calcInputAfterTextChanged() {
+        String fly = calc.calcOnTheFly();
+        if(fly.length() > 0 && calc.viewStr.length() != 0) {
+            calcPage.setResult(fly);
+        }
+    }
+
     private OnClickListener leftBtn = new OnClickListener() {
         public void onClick(View v) {
             setIndex(getIndex() - calc.bspcHelper(getIndex(),false));
@@ -491,7 +496,7 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
                 if(calc.execute()) {
                     setIndex (0);
                     calcPage.setCalc(calc.viewStr, getIndex());
-                    onTheFly.setText(calc.result);
+                    calcPage.setResult(calc.result);
                     updatePrevResults();
                 } else {
                     Toast.makeText(getActivity(), "Error: Could not calculate", Toast.LENGTH_SHORT).show();
@@ -546,7 +551,7 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
             calc.execute();
             setIndex (calc.viewStr.length());
             calcPage.setCalc(calc.viewStr, getIndex());
-            onTheFly.setText(calc.result);
+            calcPage.setResult(calc.result);
             updatePrevResults();
         }
     };
@@ -565,26 +570,8 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
             calc.execute();
             setIndex (calc.viewStr.length());
             calcPage.setCalc(calc.viewStr, getIndex());
-            onTheFly.setText(calc.result);
+            calcPage.setResult(calc.result);
             updatePrevResults();
-        }
-    };
-
-    private TextWatcher ioChanged = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            String fly = calc.calcOnTheFly();
-            if(fly.length() > 0 && calc.viewStr.length() != 0) {
-                onTheFly.setText(fly);
-            }
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
         }
     };
 
