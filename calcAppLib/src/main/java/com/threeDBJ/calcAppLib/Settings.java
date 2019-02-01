@@ -1,6 +1,7 @@
 package com.threeDBJ.calcAppLib;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.view.Menu;
@@ -9,6 +10,12 @@ import android.view.MenuItem;
 public class Settings extends PreferenceActivity {
 
     static final int BACK_ID=1;
+
+    public static void save(SharedPreferences prefs, String key, boolean b) {
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putBoolean(key, b);
+        edit.apply();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

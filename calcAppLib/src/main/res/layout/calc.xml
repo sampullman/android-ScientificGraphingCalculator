@@ -7,36 +7,6 @@
 	android:id="@+id/calc_root"
     android:weightSum="10.9" >
   <LinearLayout
-      style="@style/calc_row">
-    <Button
-	android:id="@+id/shift"
-	style="@style/btn_even"
-	android:background="@drawable/btn_shift"
-	android:text="shift"/>
-    <view
-	class="com.threeDBJ.calcAppLib.view.AutoRepeatButton"
-	android:id="@+id/left"
-	style="@style/btn_even"
-	android:background="@drawable/left"
-	android:text="" />
-    <view
-	class="com.threeDBJ.calcAppLib.view.AutoRepeatButton"
-	android:id="@+id/right"
-	style="@style/btn_even"
-	android:background="@drawable/right"
-	android:text="" />
-    <Button
-	android:id="@+id/del"
-	style="@style/btn_even"
-	android:textSize="18sp"
-	android:text="bspc" />
-    <Button
-	android:id="@+id/clr"
-	style="@style/btn_even"
-	android:textSize="20sp"
-	android:text="clr" />
-  </LinearLayout>
-  <LinearLayout
       style="@style/calc_row" >
     <Button
 	android:id="@+id/ln"

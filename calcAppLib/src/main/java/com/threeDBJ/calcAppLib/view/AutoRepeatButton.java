@@ -3,17 +3,57 @@ package com.threeDBJ.calcAppLib.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import androidx.appcompat.widget.AppCompatButton;
+import android.widget.Button;
 
-public class AutoRepeatButton extends AppCompatButton {
+import com.threedbj.viewbuilder.generic.GenericButtonBuilder;
 
-      private long initialRepeatDelay = 600;
-      private long repeatIntervalInMilliseconds = 100;
+@SuppressWarnings({"AppCompatCustomView", "unchecked"})
+public class AutoRepeatButton extends Button {
+
+    private long initialRepeatDelay = 600;
+    private long repeatIntervalInMilliseconds = 100;
+
+    static abstract class GenericAutoRepeatButtonBuilder<B extends GenericAutoRepeatButtonBuilder<B, V>, V extends AutoRepeatButton> extends GenericButtonBuilder<B, V> {
+
+        private long initialRepeatDelay = 600;
+        private long repeatIntervalInMilliseconds = 100;
+
+        public B interval(long milliseconds) {
+            this.repeatIntervalInMilliseconds = milliseconds;
+            return (B)this;
+        }
+
+        public B initialDelay(long milliseconds) {
+            this.initialRepeatDelay = milliseconds;
+            return (B)this;
+        }
+
+        public V build(Context c, V v) {
+            super.build(c, v);
+            v.setInitialRepeatDelay(initialRepeatDelay);
+            v.setRepeatInterval(repeatIntervalInMilliseconds);
+            return v;
+        }
+    }
+
+    public static class AutoRepeatButtonBuilder extends GenericAutoRepeatButtonBuilder<AutoRepeatButtonBuilder, AutoRepeatButton> {
+        public AutoRepeatButton build(Context c) {
+            return build(c, new AutoRepeatButton(c));
+        }
+    }
 
     @Override
     public boolean performClick() {
         super.performClick();
         return true;
+    }
+
+    public void setInitialRepeatDelay(long delay) {
+        this.initialRepeatDelay = delay;
+    }
+
+    public void setRepeatInterval(long milliseconds) {
+        this.repeatIntervalInMilliseconds = milliseconds;
     }
 
     private Runnable repeatClickWhileButtonHeldRunnable = new Runnable() {

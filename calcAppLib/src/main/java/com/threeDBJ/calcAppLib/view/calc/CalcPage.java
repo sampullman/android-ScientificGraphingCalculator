@@ -1,16 +1,23 @@
 package com.threeDBJ.calcAppLib.view.calc;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
+
 import com.threeDBJ.calcAppLib.R;
+import com.threeDBJ.calcAppLib.Settings;
+import com.threeDBJ.calcAppLib.view.AutoRepeatButton.AutoRepeatButtonBuilder;
 import com.threeDBJ.calcAppLib.view.CalcEditText;
 import com.threeDBJ.calcAppLib.view.CalcEditText.CalcEditTextBuilder;
 import com.threedbj.viewbuilder.ButtonBuilder;
@@ -20,15 +27,22 @@ import com.threedbj.viewbuilder.generic.GenericTextViewBuilder;
 import com.threedbj.viewbuilder.generic.GenericViewBuilder;
 import com.threedbj.viewbuilder.style.Style;
 
+import java.util.ArrayList;
+
 import static android.view.Gravity.CENTER;
 import static android.view.Gravity.CENTER_VERTICAL;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class CalcPage {
+    private static String PREF_KEY_SHIFT = "main_shifted";
+    private SharedPreferences prefs;
     private CalcPageInterface page;
     private CalcEditText calcInput;
     private TextView resultText;
+    private Button shiftButton;
+    private boolean shifted;
+    private ArrayList<Shiftable> shiftables = new ArrayList<>();
 
     public static int ANSWER_COUNT = 3;
     private LinearLayout[] answerRows = new LinearLayout[ANSWER_COUNT];
@@ -39,9 +53,17 @@ public class CalcPage {
         void calcInputClick(CalcEditText calcInput);
         void calcInputSelection(int start, int end);
         void calcInputAfterTextChanged();
+
+        void left();
+        void right();
+        void backspace();
+        void delete();
+        void clear();
     }
 
-    public CalcPage(CalcPageInterface page) {
+    public CalcPage(SharedPreferences prefs, CalcPageInterface page) {
+        this.prefs = prefs;
+        this.shifted = prefs.getBoolean(PREF_KEY_SHIFT, false);
         this.page = page;
     }
 
@@ -57,7 +79,24 @@ public class CalcPage {
                 .background(R.drawable.btn_black_normal);
         }
     }
-    public static AnswerStyle Answer = new AnswerStyle();
+    private static AnswerStyle Answer = new AnswerStyle();
+
+    private static class Shiftable {
+        private Button button;
+        private String main, alt;
+        private OnClickListener mainClick, altClick;
+        Shiftable(Button button, String main, OnClickListener mainClick, String alt, OnClickListener altClick) {
+            this.button = button;
+            this.main = main;
+            this.alt = alt;
+            this.mainClick = mainClick;
+            this.altClick = altClick;
+        }
+        void shift(boolean shifted) {
+            button.setText(shifted ? alt : main);
+            button.setOnClickListener(shifted ? altClick : mainClick);
+        }
+    }
 
     public void setAnswer(int index, String input, String answer) {
         LinearLayout row = answerRows[index];
@@ -83,14 +122,35 @@ public class CalcPage {
         resultText.setText(value);
     }
 
-    private void answerRow(ViewGroup root, int index) {
+    public boolean shifted() {
+        return shifted;
+    }
 
-        LinearLayout row1 = new LinearLayoutBuilder()
+    private void setShifted(boolean shifted) {
+        this.shifted = shifted;
+        Settings.save(prefs, PREF_KEY_SHIFT, shifted);
+
+        int shiftRes = shifted ? R.drawable.btn_shift_pressed : R.drawable.btn_shift_normal;
+        int shiftColor = shifted ? R.color.dark : R.color.light;
+        shiftButton.setBackgroundResource(shiftRes);
+        shiftButton.setTextColor(ContextCompat.getColor(shiftButton.getContext(), shiftColor));
+        for(Shiftable s : shiftables) {
+            s.shift(shifted);
+        }
+    }
+
+    private LinearLayout LL(ViewGroup parent, float weight) {
+        return new LinearLayoutBuilder()
             .horizontal()
             .inLinear()
             .style(Style.WIDE)
-            .weight(0.7f)
-            .build(root);
+            .weight(weight)
+            .build(parent);
+    }
+
+    private void answerRow(ViewGroup root, int index) {
+
+        LinearLayout row1 = LL(root, 0.7f);
         answerRows[index] = row1;
 
         new ButtonBuilder(Answer)
@@ -110,6 +170,33 @@ public class CalcPage {
             .height(2)
             .background(R.color.dark_gray)
             .build(root);
+    }
+
+    private static ButtonBuilder buttonGen = new ButtonBuilder(Style.TALL)
+        .inLinear()
+        .color(R.color.light)
+        .background(R.drawable.btn_shift)
+        .marginDp(1, 1, 1, 1);
+
+    private Button button(ViewGroup parent, String text, OnClickListener listener) {
+        return buttonGen
+            .text(text)
+            .click(listener)
+            .build(parent);
+    }
+
+    private void shiftable(ViewGroup parent, String main, OnClickListener mainClick, String alt, OnClickListener altClick) {
+        Button b = button(parent, main, mainClick);
+        shiftables.add(new Shiftable(b, main, mainClick, alt, altClick));
+    }
+
+    private void autoButton(ViewGroup parent, @DrawableRes int res, OnClickListener listener) {
+        new AutoRepeatButtonBuilder()
+            .load(buttonGen)
+            .text("")
+            .click(listener)
+            .background(res)
+            .build(parent);
     }
 
     public View getView(Activity context) {
@@ -152,11 +239,22 @@ public class CalcPage {
             .textSizeSp(26)
             .color(R.color.light)
             .gravity(CENTER)
-            .build(new LinearLayoutBuilder(Style.WIDE)
-                .inLinear()
-                .weight(0.8f)
-                .horizontal()
-                .build(root));
+            .build(LL(root, 0.7f));
+
+        LinearLayout row = new LinearLayoutBuilder(Style.WIDE)
+            .inLinear()
+            .horizontal()
+            .weight(0.7f)
+            .background(R.color.dark_gray)
+            .build(root);
+
+        shiftButton = button(row, "shift", v -> setShifted(!shifted));
+        autoButton(row, R.drawable.left, v -> page.left());
+        autoButton(row, R.drawable.right, v -> page.right());
+        shiftable(row, "bspc", v -> page.backspace(), "del", v -> page.delete());
+        button(row, "clr", v -> page.clear());
+
+        setShifted(shifted);
 
         return root;
     }

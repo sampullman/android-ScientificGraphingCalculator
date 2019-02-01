@@ -50,7 +50,6 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
 
     private CalcPage calcPage;
     private Calculator calc;
-    private int state = 0;
     private Button shift;
 
     private static final String[] extra_fns = { "sinh", "cosh", "tanh", "arcsinh", "arccosh",
@@ -69,7 +68,7 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         registerPreferenceListener();
 
         if(config.orientation == 1) {
-            calcPage = new CalcPage(this);
+            calcPage = new CalcPage(prefs,this);
             v = calcPage.getView(getActivity());
 
         } else if(config.orientation == 2) {
@@ -88,7 +87,6 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         appState.setGlobalAngleMode(prefs.getBoolean("angle_rad", true));
 
         if(savedInstanceState != null) {
-            state = savedInstanceState.getInt("state");
             calc.viewStr = savedInstanceState.getString("input_string");
             calc.result = savedInstanceState.getString("result_string");
             if(calc.viewStr == null) calc.viewStr = "";
@@ -130,7 +128,6 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
                 savedInstanceState.putString("input_string", calc.viewStr);
                 savedInstanceState.putString("result_string", calc.result);
                 savedInstanceState.putInt("selection_index", calc.getViewIndex());
-                savedInstanceState.putInt("state", state);
             }
             if(calc.oldViews != null && calc.answers != null) {
                 savedInstanceState.putStringArrayList("old_inputs", calc.oldViews);
@@ -170,16 +167,7 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
     }
 
     private void setupButtons () {
-        shift = v.findViewById(R.id.shift);
-        shift.setOnClickListener(shiftBtn);
         Button n = v.findViewById(R.id.left);
-        n.setOnClickListener(leftBtn);
-        n = v.findViewById(R.id.right);
-        n.setOnClickListener(rightBtn);
-        n = v.findViewById(R.id.del);
-        n.setOnClickListener(bspcBtn);
-        n = v.findViewById(R.id.clr);
-        n.setOnClickListener(clrBtn);
         n = v.findViewById(R.id.one);
         n.setOnClickListener(makeClickListener("1","1"));
         n = v.findViewById(R.id.two);
@@ -289,12 +277,12 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
 
     public void onCreateContextMenu(ContextMenu menu, View v,ContextMenu.ContextMenuInfo menuInfo) {
         MenuItem item;
-        if(v.getId() == R.id.ans && state == 0) {
+        if(v.getId() == R.id.ans && calcPage.shifted()) {
             menu.setHeaderTitle("Answers");
             for(int i=calc.answers.size()-1;i>=0;i-=1) {
                 item = menu.add(PREV_ANSWER,i,0,calc.answers.get(i));
             }
-        } else if(v.getId() == R.id.ans && state == 1) {
+        } else if(v.getId() == R.id.ans && !calcPage.shifted()) {
             menu.setHeaderTitle("Previous Entries");
             for(int i=calc.oldViews.size()-1;i>=0;i-=1) {
                 item = menu.add(PREV_ENTRY,i,0,calc.oldViews.get(i));
@@ -318,10 +306,8 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
     }
 
     private void updateCalcState() {
-        if(state == 1) {
-            Button n = v.findViewById(R.id.del);
-            n.setOnClickListener(delBtn);
-            n.setText("del");
+        Button n;
+        if(calcPage.shifted()) {
             n = v.findViewById(R.id.sin);
             n.setOnClickListener(makeFnClickListener("Arcsin","arcsin"));
             n.setText("arcsin");
@@ -352,12 +338,7 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
             n = v.findViewById(R.id.recip);
             n.setOnClickListener(percentBtn);
             n.setText("%");
-            shift.setBackgroundResource(R.drawable.btn_shift_pressed);
-            shift.setTextColor(getColor(R.color.dark));
         } else {
-            Button n = v.findViewById(R.id.del);
-            n.setText("bspc");
-            n.setOnClickListener(bspcBtn);
             n = v.findViewById(R.id.sin);
             n.setOnClickListener(makeFnClickListener("Sin","sin"));
             n.setText("sin");
@@ -388,8 +369,6 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
             n = v.findViewById(R.id.recip);
             n.setOnClickListener(recipBtn);
             n.setText("1/x");
-            shift.setBackgroundResource(R.drawable.btn_shift_normal);
-            shift.setTextColor(getColor(R.color.light));
         }
     }
 
@@ -397,11 +376,6 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
     private int getColor(int res) {
         return getActivity().getResources().getColor(res);
     }
-
-    private OnClickListener shiftBtn = v -> {
-        state = (state == 0) ? 1 : 0;
-        updateCalcState();
-    };
 
     private OnLongClickListener defaultLongClick = v -> true;
 
@@ -428,58 +402,52 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         }
     }
 
-    private OnClickListener leftBtn = new OnClickListener() {
-        public void onClick(View v) {
-            setIndex(getIndex() - calc.bspcHelper(getIndex(),false));
-            if(getIndex() < 0) {
-                setIndex (calc.viewStr.length());
-            }
-            calcPage.setCalcSelection(getIndex());
+    @Override
+    public void left() {
+        setIndex(getIndex() - calc.bspcHelper(getIndex(),false));
+        if(getIndex() < 0) {
+            setIndex (calc.viewStr.length());
         }
-    };
+        calcPage.setCalcSelection(getIndex());
+    }
 
-    private OnClickListener rightBtn = new OnClickListener() {
-        public void onClick(View v) {
-            setIndex (getIndex() + calc.delHelper(getIndex(),false));
-            if(getIndex() > calc.viewStr.length()) setIndex (0);
-            calcPage.setCalcSelection(getIndex());
+    @Override
+    public void right() {
+        setIndex (getIndex() + calc.delHelper(getIndex(),false));
+        if(getIndex() > calc.viewStr.length()) setIndex (0);
+        calcPage.setCalcSelection(getIndex());
+    }
+
+    @Override
+    public void delete() {
+        if (getIndex() < calc.viewStr.length()) {
+            int delNum = calc.delHelper(getIndex(),true);
+            int ind = getIndex();
+            calc.viewStr = calc.viewStr.substring(0,getIndex()) +
+                calc.viewStr.substring(getIndex() + delNum);
+            calcPage.setCalc(calc.viewStr, ind);
         }
-    };
+    }
 
-    private OnClickListener delBtn = new OnClickListener() {
-        public void onClick(View v) {
-            if (getIndex() < calc.viewStr.length ()) {
-                int delNum = calc.delHelper(getIndex(),true);
-                int ind = getIndex();
-                calc.viewStr = calc.viewStr.substring(0,getIndex()) +
-                        calc.viewStr.substring(getIndex() + delNum);
-                calcPage.setCalc(calc.viewStr, ind);
-            }
-        }
-    };
-
-    private OnClickListener bspcBtn = new OnClickListener() {
-        public void onClick(View v) {
-            if (getIndex() > 0) {
-                int bspcNum = calc.bspcHelper(getIndex(), true);
-                calc.viewStr = calc.viewStr.substring(0,getIndex()-bspcNum) +
-                        calc.viewStr.substring(getIndex());
-                int newInd = getIndex() - bspcNum;
-                setIndex(newInd);
-                calcPage.setCalc(calc.viewStr, getIndex());
-            }
-        }
-    };
-
-    private OnClickListener clrBtn = new OnClickListener() {
-        public void onClick(View v) {
-            calc.tokens.clear();
-            calc.tokenLens.clear();
-            calc.viewStr = "";
-            setIndex(0);
+    @Override
+    public void backspace() {
+        if (getIndex() > 0) {
+            int bspcNum = calc.bspcHelper(getIndex(), true);
+            calc.viewStr = calc.viewStr.substring(0,getIndex()-bspcNum) +
+                calc.viewStr.substring(getIndex());
+            int newInd = getIndex() - bspcNum;
+            setIndex(newInd);
             calcPage.setCalc(calc.viewStr, getIndex());
-        }
-    };
+        }    }
+
+    @Override
+    public void clear() {
+        calc.tokens.clear();
+        calc.tokenLens.clear();
+        calc.viewStr = "";
+        setIndex(0);
+        calcPage.setCalc(calc.viewStr, getIndex());
+    }
 
     private OnClickListener sqrBtn = new OnClickListener() {
         public void onClick(View v) {

@@ -4,13 +4,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
-import com.threedbj.viewbuilder.EditTextBuilder;
 import com.threedbj.viewbuilder.generic.GenericEditTextBuilder;
 
 @SuppressWarnings({"AppCompatCustomView", "unchecked"})
 public class CalcEditText extends EditText {
     SelectionChangedListener listener;
-
 
     static abstract class GenericCalcEditTextBuilder<B extends GenericCalcEditTextBuilder<B, V>, V extends CalcEditText> extends GenericEditTextBuilder<B, V> {
 
