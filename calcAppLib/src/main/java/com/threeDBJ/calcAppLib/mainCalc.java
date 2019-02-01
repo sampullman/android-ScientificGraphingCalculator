@@ -6,14 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.widget.TextView;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 import android.view.ContextMenu;
-import android.text.Editable;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -21,10 +16,8 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
 import android.content.Context;
-import java.lang.StringBuffer;
 import android.content.res.Configuration;
 import android.view.WindowManager;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import com.threeDBJ.calcAppLib.cliCalc.*;
@@ -37,9 +30,7 @@ import timber.log.Timber;
 
 import static com.threeDBJ.calcAppLib.view.calc.CalcPage.ANSWER_COUNT;
 
-public class mainCalc extends Fragment implements ListDialogCallback, CalcPageInterface {
-
-    public static final int UNIQUE_ID=1;
+public class mainCalc extends Fragment implements ListDialogCallback, CalcPageInterface {;
 
     private final int PREV_ANSWER = 0;
     private final int PREV_ENTRY = 1;
@@ -50,7 +41,6 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
 
     private CalcPage calcPage;
     private Calculator calc;
-    private Button shift;
 
     private static final String[] extra_fns = { "sinh", "cosh", "tanh", "arcsinh", "arccosh",
             "arctanh", "csc", "sec", "cot"};
@@ -79,7 +69,13 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
 
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setup();
+        appState = (CalcApp)getActivity().getApplicationContext();
+        this.calc = appState.getMainCalc();
+        if(calc == null) {
+            Timber.e("null main calc");
+        }
+        calcPage.setCalcText(calc.viewStr);
+
         try {
             appState.setGlobalRounding(Integer.parseInt(prefs.getString("rounding", "6")));
         } catch(Exception e) {
@@ -104,7 +100,6 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         }
     }
 
-    /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,87 +148,8 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         }
     }
 
-    private void setup () {
-        appState = (CalcApp)getActivity().getApplicationContext();
-        this.calc = appState.getMainCalc();
-        if(calc == null) {
-            Timber.e("null main calc");
-        }
-        calcPage.setCalcText(calc.viewStr);
-        /*
-
-        setupButtons ();
-        */
-    }
-
-    private void setupButtons () {
-        Button n = v.findViewById(R.id.left);
-        n = v.findViewById(R.id.one);
-        n.setOnClickListener(makeClickListener("1","1"));
-        n = v.findViewById(R.id.two);
-        n.setOnClickListener(makeClickListener("2","2"));
-        n = v.findViewById(R.id.three);
-        n.setOnClickListener(makeClickListener("3","3"));
-        n = v.findViewById(R.id.four);
-        n.setOnClickListener(makeClickListener("4","4"));
-        n = v.findViewById(R.id.five);
-        n.setOnClickListener(makeClickListener("5","5"));
-        n = v.findViewById(R.id.six);
-        n.setOnClickListener(makeClickListener("6","6"));
-        n = v.findViewById(R.id.seven);
-        n.setOnClickListener(makeClickListener("7","7"));
-        n = v.findViewById(R.id.eight);
-        n.setOnClickListener(makeClickListener("8","8"));
-        n  = v.findViewById(R.id.nine);
-        n.setOnClickListener(makeClickListener("9","9"));
-        n = v.findViewById(R.id.zero);
-        n.setOnClickListener(makeClickListener("0","0"));
-        n = v.findViewById(R.id.equals);
-        n.setOnClickListener(equalsBtn);
-        n = v.findViewById(R.id.point);
-        n.setOnClickListener(makeClickListener(".","."));
-        n = v.findViewById(R.id.plus);
-        n.setOnClickListener(makeClickListener("+","+"));
-        n = v.findViewById(R.id.minus);
-        n.setOnClickListener(makeClickListener("-","-"));
-        n = v.findViewById(R.id.mult);
-        n.setOnClickListener(makeClickListener("*","*"));
-        n = v.findViewById(R.id.sign);
-        n.setOnClickListener(makeClickListener("-","-"));
-        n = v.findViewById(R.id.div);
-        n.setOnClickListener(makeClickListener("/","/"));
-        n = v.findViewById(R.id.ln);
-        n.setOnClickListener(makeFnClickListener("Log","ln"));
-        n = v.findViewById(R.id.sqr);
-        n.setOnClickListener(sqrBtn);
-        n = v.findViewById(R.id.pwr);
-        n.setOnClickListener(makeClickListener("^","^"));
-        n = v.findViewById(R.id.lParen);
-        n.setOnClickListener(makeClickListener("(","("));
-        n = v.findViewById(R.id.rParen);
-        n.setOnClickListener(makeClickListener(")",")"));
-        n = v.findViewById(R.id.sin);
-        n.setOnClickListener(makeFnClickListener("Sin","sin"));
-        n = v.findViewById(R.id.cos);
-        n.setOnClickListener(makeFnClickListener("Cos","cos"));
-        n = v.findViewById(R.id.tan);
-        n.setOnClickListener(makeFnClickListener("Tan","tan"));
-        n = v.findViewById(R.id.pie);
-        n.setOnClickListener(makeClickListener("PI","pi"));
-        n = v.findViewById(R.id.E);
-        n.setOnClickListener(makeClickListener("E","E"));
-        n = v.findViewById(R.id.ans);
-        n.setOnClickListener(ansBtn);
-        registerForContextMenu(n);
-        n = v.findViewById(R.id.copy);
-        n.setOnClickListener(copyBtn);
-        n = v.findViewById(R.id.recip);
-        n.setOnClickListener(recipBtn);
-
-    }
-
     private void updateView(int ind, String ins) {
-        StringBuffer st = new StringBuffer(calc.viewStr);
+        StringBuilder st = new StringBuilder(calc.viewStr);
         st.insert(getIndex (),ins);
         calc.viewStr = st.toString();
         int newInd = getIndex() + ind;
@@ -257,35 +173,24 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         return calc.getViewIndex ();
     }
 
-    private OnClickListener makeClickListener(final String token,final String viewString) {
-        return v -> {
-            calc.addToken(token, viewString.length(), getIndex());
-            updateView(viewString.length(), viewString);
-        };
-    }
-
-    private void addCalcFn (String token, String viewString) {
+    private void addCalcFn(String token, String viewString) {
         calc.addToken(token, viewString.length(), getIndex());
-        updateView (viewString.length (), viewString);
+        updateView(viewString.length (), viewString);
         calc.addToken("(", 1, getIndex());
         updateView(1,"(");
     }
 
-    private OnClickListener makeFnClickListener(final String token,final String viewString) {
-        return v -> addCalcFn (token, viewString);
-    }
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 
-    public void onCreateContextMenu(ContextMenu menu, View v,ContextMenu.ContextMenuInfo menuInfo) {
-        MenuItem item;
         if(v.getId() == R.id.ans && calcPage.shifted()) {
             menu.setHeaderTitle("Answers");
             for(int i=calc.answers.size()-1;i>=0;i-=1) {
-                item = menu.add(PREV_ANSWER,i,0,calc.answers.get(i));
+                menu.add(PREV_ANSWER,i,0,calc.answers.get(i));
             }
         } else if(v.getId() == R.id.ans && !calcPage.shifted()) {
             menu.setHeaderTitle("Previous Entries");
             for(int i=calc.oldViews.size()-1;i>=0;i-=1) {
-                item = menu.add(PREV_ENTRY,i,0,calc.oldViews.get(i));
+                menu.add(PREV_ENTRY,i,0,calc.oldViews.get(i));
             }
         }
     }
@@ -304,80 +209,6 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         }
         return true;
     }
-
-    private void updateCalcState() {
-        Button n;
-        if(calcPage.shifted()) {
-            n = v.findViewById(R.id.sin);
-            n.setOnClickListener(makeFnClickListener("Arcsin","arcsin"));
-            n.setText("arcsin");
-            n.setTextSize(14);
-            n = v.findViewById(R.id.cos);
-            n.setOnClickListener(makeFnClickListener("Arccos","arccos"));
-            n.setTextSize(14);
-            n.setText("arccos");
-            n = v.findViewById(R.id.tan);
-            n.setOnClickListener(makeFnClickListener("Arctan","arctan"));
-            n.setText("arctan");
-            n.setTextSize(14);
-            n = v.findViewById(R.id.copy);
-            n.setOnClickListener(pasteBtn);
-            n.setText("paste");
-            n = v.findViewById (R.id.sqr);
-            n.setOnClickListener(makeFnClickListener("Sqrt","sqrt"));
-            n.setText ("sqrt");
-            n = v.findViewById(R.id.pie);
-            n.setOnClickListener(makeClickListener("i","i"));
-            n.setText("i");
-            n = v.findViewById(R.id.ans);
-            n.setOnClickListener(ansBtn);
-            n.setText("last");
-            n = v.findViewById(R.id.E);
-            n.setOnClickListener(makeClickListener("e","e"));
-            n.setText("e");
-            n = v.findViewById(R.id.recip);
-            n.setOnClickListener(percentBtn);
-            n.setText("%");
-        } else {
-            n = v.findViewById(R.id.sin);
-            n.setOnClickListener(makeFnClickListener("Sin","sin"));
-            n.setText("sin");
-            n.setTextSize(18);
-            n = v.findViewById(R.id.cos);
-            n.setOnClickListener(makeFnClickListener("Cos","cos"));
-            n.setText("cos");
-            n.setTextSize(18);
-            n = v.findViewById(R.id.tan);
-            n.setOnClickListener(makeFnClickListener("Tan","tan"));
-            n.setText("tan");
-            n.setTextSize(18);
-            n = v.findViewById(R.id.copy);
-            n.setOnClickListener(copyBtn);
-            n.setText("copy");
-            n = v.findViewById (R.id.sqr);
-            n.setOnClickListener(sqrBtn);
-            n.setText ("sqr");
-            n = v.findViewById(R.id.pie);
-            n.setOnClickListener(makeClickListener("PI","pi"));
-            n.setText("pi");
-            n = v.findViewById(R.id.ans);
-            n.setOnClickListener(ansBtn);
-            n.setText("ans");
-            n = v.findViewById(R.id.E);
-            n.setOnClickListener(makeClickListener("E","E"));
-            n.setText("E");
-            n = v.findViewById(R.id.recip);
-            n.setOnClickListener(recipBtn);
-            n.setText("1/x");
-        }
-    }
-
-    // TODO -- abstract (+ FnEntry => CalcApp or singleton)
-    private int getColor(int res) {
-        return getActivity().getResources().getColor(res);
-    }
-
-    private OnLongClickListener defaultLongClick = v -> true;
 
     @Override
     public void calcInputClick(CalcEditText calcInput) {
@@ -400,6 +231,17 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         if(fly.length() > 0 && calc.viewStr.length() != 0) {
             calcPage.setResult(fly);
         }
+    }
+
+    @Override
+    public void token(String token) {
+        calc.addToken(token, token.length(), getIndex());
+        updateView(token.length(), token);
+    }
+
+    @Override
+    public void function(String token, String viewString) {
+        addCalcFn(token, viewString);
     }
 
     @Override
@@ -449,31 +291,29 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         calcPage.setCalc(calc.viewStr, getIndex());
     }
 
-    private OnClickListener sqrBtn = new OnClickListener() {
-        public void onClick(View v) {
-            calc.addToken("^", 1, getIndex());
-            calc.addToken("2", 1, getIndex()+1);
-            updateView(2,"^2");
-        }
-    };
+    @Override
+    public void square() {
+        calc.addToken("^", 1, getIndex());
+        calc.addToken("2", 1, getIndex()+1);
+        updateView(2,"^2");
+    }
 
-    private OnClickListener equalsBtn = new OnClickListener() {
-        public void onClick(View v) {
-            // send to parser
-            if(calc.viewStr != null && calc.viewStr.length() > 0) {
-                if(calc.execute()) {
-                    setIndex (0);
-                    calcPage.setCalc(calc.viewStr, getIndex());
-                    calcPage.setResult(calc.result);
-                    updatePrevResults();
-                } else {
-                    Toast.makeText(getActivity(), "Error: Could not calculate", Toast.LENGTH_SHORT).show();
-                }
+    @Override
+    public void equals() {
+        // send to parser
+        if(calc.viewStr != null && calc.viewStr.length() > 0) {
+            if(calc.execute()) {
+                setIndex (0);
+                calcPage.setCalc(calc.viewStr, getIndex());
+                calcPage.setResult(calc.result);
+                updatePrevResults();
+            } else {
+                Toast.makeText(getActivity(), "Error: Could not calculate", Toast.LENGTH_SHORT).show();
             }
         }
-    };
+    }
 
-    public void updatePrevResults() {
+    private void updatePrevResults() {
         int n;
         if(calc.answers.size() > calc.oldViews.size()) {
             n = calc.oldViews.size() - 1;
@@ -487,61 +327,59 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         }
     }
 
-    private OnClickListener ansBtn = v ->
-        getActivity().openContextMenu (v.findViewById( R.id.ans));
+    @Override
+    public void answer(View v) {
+        getActivity().openContextMenu(v);
+    }
 
-    private OnClickListener copyBtn = new OnClickListener() {
-        public void onClick(View v) {
-            appState.setCopy (calc);
-        }
-    };
+    @Override
+    public void copy() {
+        appState.setCopy(calc);
+    }
 
-    private OnClickListener pasteBtn = new OnClickListener() {
-        public void onClick(View v) {
-            //calc.tokenize(copy);
-            appState.getCopy (calc);
-            setIndex(calc.viewStr.length());
-            calcPage.setCalc(calc.viewStr, getIndex());
-        }
-    };
+    @Override
+    public void paste() {
+        //calc.tokenize(copy);
+        appState.getCopy(calc);
+        setIndex(calc.viewStr.length());
+        calcPage.setCalc(calc.viewStr, getIndex());
+    }
 
-    private OnClickListener recipBtn = new OnClickListener() {
-        public void onClick(View v) {
-            calc.tokens.add(0, new Primitive("("));
-            calc.tokenLens.add(0, 1);
-            calc.tokens.add(0, new Primitive ("/"));
-            calc.tokens.add(0,new ComplexNumber (1.0,0));
-            calc.tokenLens.add(0,1);
-            calc.tokenLens.add(0,1);
-            calc.tokens.add(new Primitive (")"));
-            calc.tokenLens.add(1);
-            calc.viewStr = "1/("+calc.viewStr+")";
-            calc.execute();
-            setIndex (calc.viewStr.length());
-            calcPage.setCalc(calc.viewStr, getIndex());
-            calcPage.setResult(calc.result);
-            updatePrevResults();
-        }
-    };
+    @Override
+    public void reciprocal() {
+        calc.tokens.add(0, new Primitive("("));
+        calc.tokenLens.add(0, 1);
+        calc.tokens.add(0, new Primitive ("/"));
+        calc.tokens.add(0,new ComplexNumber (1.0,0));
+        calc.tokenLens.add(0,1);
+        calc.tokenLens.add(0,1);
+        calc.tokens.add(new Primitive (")"));
+        calc.tokenLens.add(1);
+        calc.viewStr = "1/("+calc.viewStr+")";
+        calc.execute();
+        setIndex (calc.viewStr.length());
+        calcPage.setCalc(calc.viewStr, getIndex());
+        calcPage.setResult(calc.result);
+        updatePrevResults();
+    }
 
-    private OnClickListener percentBtn = new OnClickListener() {
-        public void onClick(View v) {
-            calc.tokens.add(0, new Primitive ("("));
-            calc.tokenLens.add(0, 1);
-            calc.tokens.add(new Primitive (")"));
-            calc.tokenLens.add(1);
-            calc.tokens.add(new Primitive ("/"));
-            calc.tokenLens.add(1);
-            calc.tokens.add(new ComplexNumber (100.0,0));
-            calc.tokenLens.add(3);
-            calc.viewStr = "("+calc.viewStr+")/100.0";
-            calc.execute();
-            setIndex (calc.viewStr.length());
-            calcPage.setCalc(calc.viewStr, getIndex());
-            calcPage.setResult(calc.result);
-            updatePrevResults();
-        }
-    };
+    @Override
+    public void percent() {
+        calc.tokens.add(0, new Primitive("("));
+        calc.tokenLens.add(0, 1);
+        calc.tokens.add(new Primitive(")"));
+        calc.tokenLens.add(1);
+        calc.tokens.add(new Primitive("/"));
+        calc.tokenLens.add(1);
+        calc.tokens.add(new ComplexNumber(100.0, 0));
+        calc.tokenLens.add(3);
+        calc.viewStr = "(" + calc.viewStr + ")/100.0";
+        calc.execute();
+        setIndex(calc.viewStr.length());
+        calcPage.setCalc(calc.viewStr, getIndex());
+        calcPage.setResult(calc.result);
+        updatePrevResults();
+    }
 
     @Override
     public void reportListDialogResult(int ind) {
