@@ -16,19 +16,18 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.view.WindowManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import com.threeDBJ.calcAppLib.cliCalc.*;
 import com.threeDBJ.calcAppLib.view.CalcEditText;
 import com.threeDBJ.calcAppLib.view.ListDialogFragment.ListDialogCallback;
-import com.threeDBJ.calcAppLib.view.calc.CalcPage;
-import com.threeDBJ.calcAppLib.view.calc.CalcPage.CalcPageInterface;
+import com.threeDBJ.calcAppLib.view.page.CalcPage;
+import com.threeDBJ.calcAppLib.view.page.CalcPage.CalcPageInterface;
 
 import timber.log.Timber;
 
-import static com.threeDBJ.calcAppLib.view.calc.CalcPage.ANSWER_COUNT;
+import static com.threeDBJ.calcAppLib.view.page.CalcPage.ANSWER_COUNT;
 
 public class mainCalc extends Fragment implements ListDialogCallback, CalcPageInterface {;
 
@@ -48,23 +47,15 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
     private static final String help_text = "-Use the tabs at the top to switch between calculator, unit conversion, and graphing modes.\n-Press shift for more functions.\n-1/x and % functions evaluate the current expression and then operate on the result.\n-copy/paste works for numbers and expressions across all tabs.\n-last/ans contain previous expressions and answers, respectively\n-5E6 is equivalent to 5*10^6\n-Tap a previous result to insert it, or previous equation to replace the current input.\n\n-Please submit bugs and feature requests to 3dbj.dev@gmail.com";
 
     private CalcApp appState;
-    private View v;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Configuration config = getResources().getConfiguration();
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         registerPreferenceListener();
 
-        if(config.orientation == 1) {
-            calcPage = new CalcPage(prefs,this);
-            v = calcPage.getView(getActivity());
-
-        } else if(config.orientation == 2) {
-            v = inflater.inflate(R.layout.calc2, container, false);
-        }
-        return v;
+        calcPage = new CalcPage(prefs,this);
+        return calcPage.getView(getActivity());
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -411,7 +402,7 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
     }
 
     private void showOptionsMenu() {
-        Intent intent = new Intent(v.getContext(), Settings.class);
+        Intent intent = new Intent(getContext(), Settings.class);
         startActivityForResult(intent, 0);
     }
 

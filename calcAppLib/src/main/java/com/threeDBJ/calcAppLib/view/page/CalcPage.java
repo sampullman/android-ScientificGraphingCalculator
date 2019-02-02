@@ -1,4 +1,4 @@
-package com.threeDBJ.calcAppLib.view.calc;
+package com.threeDBJ.calcAppLib.view.page;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
