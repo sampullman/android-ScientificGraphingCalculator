@@ -85,7 +85,7 @@ public class CalcPage {
                 .inLinear()
                 .width(WRAP_CONTENT)
                 .height(MATCH_PARENT)
-                .background(R.drawable.btn_black_normal);
+                .background(R.color.white);
         }
     }
     private static AnswerStyle Answer = new AnswerStyle();
@@ -154,12 +154,13 @@ public class CalcPage {
             .inLinear()
             .style(Style.WIDE)
             .weight(weight)
+            .backgroundColor(R.color.white)
             .build(parent);
     }
 
     private void answerRow(ViewGroup root, int index) {
 
-        LinearLayout row1 = LL(root, 0.7f);
+        LinearLayout row1 = LL(root, 1f);
         answerRows[index] = row1;
 
         new ButtonBuilder(Answer)
@@ -199,6 +200,10 @@ public class CalcPage {
             .build(parent);
     }
 
+    private void token(ViewGroup parent, String token) {
+        button(parent, token, 0.22f, v -> page.token(token));
+    }
+
     private void token(ViewGroup parent, String token, float weight) {
         button(parent, token, weight, v -> page.token(token));
     }
@@ -223,7 +228,11 @@ public class CalcPage {
     }
 
     private void shiftable(ViewGroup parent, String main, OnClickListener mainClick, String alt, OnClickListener altClick) {
-        Button b = button(parent, main, mainClick);
+        shiftable(parent, 0.22f, main, mainClick, alt, altClick);
+    }
+
+    private void shiftable(ViewGroup parent, float weight, String main, OnClickListener mainClick, String alt, OnClickListener altClick) {
+        Button b = button(parent, main, weight, mainClick);
         shiftables.add(new Shiftable(b, main, mainClick, alt, altClick));
     }
 
@@ -232,6 +241,7 @@ public class CalcPage {
             .load(buttonGen)
             .text("")
             .click(listener)
+            .weight(0.22f)
             .background(res)
             .build(parent);
     }
@@ -240,14 +250,14 @@ public class CalcPage {
         LinearLayoutBuilder rowBuilder = new LinearLayoutBuilder(Style.WIDE)
             .inLinear()
             .horizontal()
-            .weight(0.7f)
+            .weight(1f)
             .weightSum(1f)
             .background(R.color.dark_gray);
 
         LinearLayout root = new LinearLayoutBuilder()
             .vertical()
             .style(Style.MATCH)
-            .weightSum(10.9f)
+            .weightSum(12.4f)
             .build(context);
 
         for(int i=0; i < answerRows.length; i += 1) {
@@ -259,12 +269,12 @@ public class CalcPage {
             .click(v -> page.calcInputClick(calcInput))
             .layoutGravity(CENTER)
             .inLinear()
-            .style(Style.WIDE)
+            .style(Style.MATCH)
             .paddingDp(8, 0, 0, 0)
-            .marginDp(0, 0, 0, 6)
+            .marginDp(0, 0, 0, 0)
             .inputType(InputType.TYPE_CLASS_NUMBER)
             .textSizeSp(26)
-            .build(root);
+            .build(LL(root, 1.2f));
         calcInput.requestFocus();
         calcInput.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -282,51 +292,52 @@ public class CalcPage {
             .textSizeSp(26)
             .color(R.color.light)
             .gravity(CENTER)
-            .build(LL(root, 0.7f));
+            .backgroundColor(R.color.white)
+            .build(LL(root, 1.2f));
 
         LinearLayout row = rowBuilder.build(root);
-        shiftButton = button(row, "shift", v -> setShifted(!shifted));
+        shiftButton = button(row, "shift", 0.17f, v -> setShifted(!shifted));
         autoButton(row, R.drawable.left, v -> page.left());
         autoButton(row, R.drawable.right, v -> page.right());
         shiftable(row, "bspc", v -> page.backspace(), "del", v -> page.delete());
-        button(row, "clr", v -> page.clear());
+        button(row, "clr", 0.17f, v -> page.clear());
 
         row = rowBuilder.build(root);
         fnButton(row, 0.17f,"ln", "Log");
-        token(row, "7", 0.22f, 3, 3, 0, 0);
-        token(row, "8", 0.22f, 0, 3, 0, 0);
-        token(row, "9", 0.22f, 0, 3, 3, 0);
+        token(row, "7", 0.22f, 3, 3, 1, 1);
+        token(row, "8", 0.22f, 0, 3, 1, 1);
+        token(row, "9", 0.22f, 0, 3, 3, 1);
         token(row, "+", 0.17f);
 
         row = rowBuilder.build(root);
         token(row, "^", 0.17f);
-        token(row, "4", 0.22f, 3, 0, 0, 0);
-        token(row, "5", 0.22f);
-        token(row, "6", 0.22f, 0, 0, 3, 0);
+        token(row, "4", 0.22f, 3, 0, 1, 1);
+        token(row, "5", 0.22f, 0, 0, 1, 1);
+        token(row, "6", 0.22f, 0, 0, 3, 1);
         token(row, "-", 0.17f);
 
         row = rowBuilder.build(root);
-        shiftable(row, "sqr", v -> page.square(), "Sqrt", v -> page.token("Sqrt"));
+        shiftable(row, 0.17f, "sqr", v -> page.square(), "Sqrt", v -> page.token("Sqrt"));
         token(row, "1", 0.22f, 3, 0, 0, 3);
-        token(row, "2", 0.22f);
+        token(row, "2", 0.22f, 1, 0, 1, 1);
         token(row, "3", 0.22f, 0, 0, 3, 3);
         token(row, "*", 0.17f);
 
         row = rowBuilder.build(root);
-        shiftable(row, "E", v -> page.token("E"), "e", v -> page.token("e"));
-        token(row, ".", 0.22f, 0, 0, 3, 3);
+        shiftable(row, 0.17f, "E", v -> page.token("E"), "e", v -> page.token("e"));
+        token(row, ".");
         token(row, "0", 0.22f, 3, 0, 3, 3);
         button(row, "(-)", v -> page.token("-"));
         token(row, "/", 0.195f);
 
         row = rowBuilder.build(root);
-        shiftable(row, "1/x", v -> page.reciprocal(), "%", v -> page.percent());
+        shiftable(row, 0.17f, "1/x", v -> page.reciprocal(), "%", v -> page.percent());
         token(row, "(", 0.22f);
         token(row, ")", 0.22f);
         button(row, "=", 0.4f, v -> page.equals());
 
         row = rowBuilder.build(root);
-        shiftable(row, "PI", v -> page.token("PI"), "i", v -> page.token("i"));
+        shiftable(row, 0.17f, "PI", v -> page.token("PI"), "i", v -> page.token("i"));
         shiftable(row, "Sin", v -> page.function("Sin", "Sin"),
             "Arcsin", v -> page.function("Arcsin", "Arcsin"));
         shiftable(row, "Cos", v -> page.function("Cos", "Cos"),
@@ -334,7 +345,7 @@ public class CalcPage {
         shiftable(row, "Tan", v -> page.function("Tan", "Tan"),
             "Arctan", v -> page.function("Arctan", "Arctan"));
         shiftable(row, "copy", v -> page.copy(), "paste", v -> page.paste());
-        shiftable(row, "ans", v -> page.answer(v), "last", v -> page.answer(v));
+        shiftable(row, 0.17f, "ans", v -> page.answer(v), "last", v -> page.answer(v));
 
         setShifted(shifted);
 
