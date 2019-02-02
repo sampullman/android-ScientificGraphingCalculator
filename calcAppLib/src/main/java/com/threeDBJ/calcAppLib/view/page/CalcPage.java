@@ -188,10 +188,6 @@ public class CalcPage {
         .background(R.drawable.btn_shift)
         .marginDp(1, 1, 1, 1);
 
-    private Button button(ViewGroup parent, String text, OnClickListener listener) {
-        return button(parent, text, 0.22f, listener);
-    }
-
     private Button button(ViewGroup parent, String text, float weight, OnClickListener listener) {
         return buttonGen
             .text(text)
@@ -327,7 +323,7 @@ public class CalcPage {
         shiftable(row, 0.17f, "E", v -> page.token("E"), "e", v -> page.token("e"));
         token(row, ".");
         token(row, "0", 0.22f, 3, 0, 3, 3);
-        button(row, "(-)", v -> page.token("-"));
+        button(row, "(-)", 0.22f, v -> page.token("-"));
         token(row, "/", 0.195f);
 
         row = rowBuilder.build(root);

@@ -1,44 +1,28 @@
 package com.threeDBJ.calcAppLib;
 
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.threeDBJ.calcAppLib.cliCalc.ComplexNumber;
+import com.threeDBJ.calcAppLib.view.page.ConvPage;
+import com.threeDBJ.calcAppLib.view.page.ConvPage.ConvPageInterface;
+import static com.threeDBJ.calcAppLib.view.page.ConvPage.*;
 
-public class ConvCalc extends Fragment {
+public class ConvCalc extends Fragment implements ConvPageInterface {
 
-    static final int FROM = 0, TO = 1;
-
-    public static final int UNIQUE_ID = 2;
-
-    private EditText input;
-    private TextView output, unitDisplay;
-    ListView convType, convChoice;
-    SelectedAdapter convTypeAdapter, convChoiceAdapter;
+    private ConvPage page;
+    private SelectedAdapter convTypeAdapter, convChoiceAdapter;
     private int fromInd = -1, toInd, choiceType = FROM, convChoiceInd = -1, convInd = -1;
-    boolean exists = false;
     private String[] curNames;
     private double[] curConvs;
     private double result;
@@ -47,9 +31,9 @@ public class ConvCalc extends Fragment {
 
     private CalcApp appState;
 
-    static final String[] convTypes = {"Mass", "Temperature", "Pressure", "Volume", "Distance", "Cooking", "Speed",
+    private static final String[] convTypes = {"Mass", "Temperature", "Pressure", "Volume", "Distance", "Cooking", "Speed",
             "Base", "Energy"};
-    static final String[][] convNames = {{"Microgram", "Milligram", "Gram", "Kilogram",
+    private static final String[][] convNames = {{"Microgram", "Milligram", "Gram", "Kilogram",
             "Metric ton/Megagram", "Grain", "Dram",
             "Ounce", "Pound", "US ton"},
             {"Celsius", "Kelvin", "Fahrenheit", "Rankine"},
@@ -69,7 +53,7 @@ public class ConvCalc extends Fragment {
                     "Base 9", "Base 10", "Base 16 (Hex)"},
             {"Millijoule", "Joule", "Kilojoule", "calorie (chem)",
                     "Calorie (nutr)", "Watt/hour", "Kilowatt/hour", "Electronvolt"}};
-    static final double[][] convValues = {{0.000001, 0.001, 1.0, 1000.0, 1000000.0, 0.06479891,
+    private static final double[][] convValues = {{0.000001, 0.001, 1.0, 1000.0, 1000000.0, 0.06479891,
             1.7718451953, 28.349523125, 453.59237, 907184.74},
             {274.15, 1, 255.9277778, 0.5555556},
             {1.0, 100000.0, 98066.5, 101325.01, 133.32237, 6894.75728},
@@ -85,22 +69,18 @@ public class ConvCalc extends Fragment {
             {2, 3, 4, 5, 6, 7, 8, 9, 10, 16},
             {0.001, 1.0, 1000.0, 4.184, 4186.8, 3600.0, 3600000.0, 1.6021773e-19}};
 
-    String unitString = "", inputString = "", outputString = "";
+    private String unitString = "", inputString = "", outputString = "";
 
-    View v;
-
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Configuration config = getActivity().getResources().getConfiguration();
-        if(config.orientation == 1) {
-            v = inflater.inflate(R.layout.conv, container, false);
-        } else if(config.orientation == 2) {
-            v = inflater.inflate(R.layout.conv2, container, false);
-        }
-
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         appState = (CalcApp) getActivity().getApplicationContext();
 
-        this.exists = true;
-        return v;
+        page = new ConvPage(this, convChoiceAdapter, convTypeAdapter);
+        return page.getView(getActivity());
+    }
+
+    private void setUnit(String text) {
+        unitString = text;
+        page.setUnit(text);
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -110,63 +90,19 @@ public class ConvCalc extends Fragment {
         convTypeAdapter = new SelectedAdapter(getActivity(), 0, convTypes, Color.GRAY);
         convTypeAdapter.setNotifyOnChange(true);
 
-        convType = (ListView) v.findViewById(R.id.conv_types);
-        convType.setAdapter(convTypeAdapter);
-
-        convType.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView arg0, View view,
-                                    int position, long id) {
-                // user clicked a list item, make it "selected"
-                convInd = position;
-                convTypeAdapter.setSelectedPosition(convInd);
-                showConvChoice(convInd);
-                convChoiceAdapter.clearSelection();
-                if(unitDisplay != null) {
-                    unitString = "";
-                    unitDisplay.setText("");
-                }
-            }
-        });
-
         int[] colors = {Color.argb(225, 0, 200, 225), Color.argb(225, 245, 0, 190)};
         String[] temp = {};
         convChoiceAdapter = new SelectedAdapter(getActivity(), 0, temp, colors);
         convChoiceAdapter.setNotifyOnChange(true);
+        page.setAdapters(convChoiceAdapter, convTypeAdapter);
 
-        convChoice = (ListView) v.findViewById(R.id.conv_choice);
-        convChoice.setAdapter(convChoiceAdapter);
-
-        convChoice.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView arg0, View view,
-                                    int position, long id) {
-                // user clicked a list item, make it "selected"
-                convChoiceAdapter.setSelectedPosition(position, choiceType);
-                if(choiceType == FROM) {
-                    choiceType = TO;
-                    fromInd = position;
-                    ((RadioButton) v.findViewById(R.id.radio_to)).toggle();
-                } else {
-                    toInd = position;
-                    choiceType = FROM;
-                    ((RadioButton) v.findViewById(R.id.radio_from)).toggle();
-                }
-                doConversion();
-            }
-        });
-        RadioButton r = (RadioButton) v.findViewById(R.id.radio_from);
-        r.setOnClickListener(makeRadioListener(FROM));
-        r = (RadioButton) v.findViewById(R.id.radio_to);
-        r.setOnClickListener(makeRadioListener(TO));
-
-        setup();
+        page.setUnit(unitString);
 
         if(savedInstanceState != null) {
             inputString = savedInstanceState.getString("input_string");
             outputString = savedInstanceState.getString("output_string");
-            input.setText(inputString);
-            output.setText(outputString);
+            page.setInput(inputString);
+            page.setOutput(outputString);
             convInd = savedInstanceState.getInt("conv_ind");
             if(convInd != -1) {
                 convTypeAdapter.setSelectedPosition(convInd);
@@ -176,19 +112,9 @@ public class ConvCalc extends Fragment {
                 convChoiceAdapter.setSelectedPosition(fromInd, FROM);
                 convChoiceAdapter.setSelectedPosition(toInd, TO);
                 choiceType = savedInstanceState.getInt("choice_type");
-                if(choiceType == TO) {
-                    ((RadioButton) v.findViewById(R.id.radio_to)).toggle();
-                } else {
-                    ((RadioButton) v.findViewById(R.id.radio_from)).toggle();
-                }
+                page.setRadio(choiceType);
             }
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        this.exists = false;
     }
 
     @Override
@@ -197,33 +123,42 @@ public class ConvCalc extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putString("input_string", input.getText().toString());
-        savedInstanceState.putString("output_string", output.getText().toString());
+        savedInstanceState.putString("input_string", page.getInput());
+        savedInstanceState.putString("output_string", page.getOutput());
         savedInstanceState.putInt("from_ind", fromInd);
         savedInstanceState.putInt("to_ind", toInd);
         savedInstanceState.putInt("choice_type", choiceType);
         savedInstanceState.putInt("conv_ind", convInd);
     }
 
-    public void setup() {
-        input = (EditText) v.findViewById(R.id.conv_input);
-        output = (TextView) v.findViewById(R.id.conv_result);
-        unitDisplay = (TextView) v.findViewById(R.id.unit_display);
-
-        // Currently does not display in landscape mode
-        if(unitDisplay != null) {
-            unitDisplay.setText(unitString);
+    @Override
+    public void convChoice(int pos) {
+        // user clicked a list item, make it "selected"
+        convChoiceAdapter.setSelectedPosition(pos, choiceType);
+        page.setRadio(choiceType);
+        if (choiceType == FROM) {
+            choiceType = TO;
+            fromInd = pos;
+        } else {
+            toInd = pos;
+            choiceType = FROM;
         }
-
-        Button n = (Button) v.findViewById(R.id.copy_conv);
-        n.setOnClickListener(copyBtn);
-        n = (Button) v.findViewById(R.id.paste_conv);
-        n.setOnClickListener(pasteBtn);
+        doConversion();
     }
 
-    public void showConvChoice(int ind) {
+    @Override
+    public void convType(int pos) {
+        // user clicked a list item, make it "selected"
+        convInd = pos;
+        convTypeAdapter.setSelectedPosition(convInd);
+        showConvChoice(convInd);
+        convChoiceAdapter.clearSelection();
+        setUnit("");
+    }
+
+    private void showConvChoice(int ind) {
         // Setup up the list view adapter
         if(convChoiceInd != ind) {
             curNames = convNames[ind];
@@ -237,39 +172,14 @@ public class ConvCalc extends Fragment {
         // Show the list view if it is currently invisible
 
         if(convChoiceInd == -1) {
-            if(android.os.Build.VERSION.SDK_INT > 13) {
-                AlphaAnimation fadeIn = new AlphaAnimation(0f, 1f);
-                fadeIn.setDuration(500);
-                fadeIn.setFillAfter(true);
-                convChoice.startAnimation(fadeIn);
-                RadioGroup rg = (RadioGroup) v.findViewById(R.id.radio);
-                rg.startAnimation(fadeIn);
-            } else {
-                convChoice.setVisibility(View.VISIBLE);
-            }
+            page.showRadio();
         }
         convChoiceInd = ind;
     }
 
-    public OnClickListener makeRadioListener(final int ind) {
-        return new OnClickListener() {
-            public void onClick(View v) {
-                choiceType = ind;
-            }
-        };
-    }
-
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if(this.exists) {
-            copy = appState.shared;
-            if(isVisibleToUser) {
-                input.addTextChangedListener(inputChanged);
-            } else {
-                input.removeTextChangedListener(inputChanged);
-            }
-        }
+    public void radio(int ind) {
+        choiceType = ind;
     }
 
     @Override
@@ -285,20 +195,17 @@ public class ConvCalc extends Fragment {
 
     /* Grabs input, converts it appropriately, and displays conversion.
        Returns a boolean for calls from onContextItemSelected */
-    public boolean doConversion() {
+    private void doConversion() {
         if(!convTypeAdapter.selectionSet() || !convChoiceAdapter.selectionSet()) {
-            return false;
+            return;
         }
         try {
-            unitString = curNames[fromInd] + " -> " + curNames[toInd];
-            if(unitDisplay != null) {
-                unitDisplay.setText(unitString);
-            }
-            inputString = input.getText().toString();
+            setUnit(curNames[fromInd] + " -> " + curNames[toInd]);
+
+            inputString = page.getInput();
             if(inputString.length() == 0) {
                 outputString = "";
-                output.setText(outputString);
-                return false;
+                page.setOutput(outputString);
             }
             double inp = Double.parseDouble(inputString);
             if(convInd == 1) {
@@ -307,20 +214,18 @@ public class ConvCalc extends Fragment {
             } else if(convInd == 6) {
                 // So is base conversion
                 outputString = convertBase(inp, (int) curConvs[fromInd], (int) curConvs[toInd]);
-                output.setText(outputString);
-                return true;
+                page.setOutput(outputString);
             } else {
                 result = (inp * curConvs[fromInd]) / curConvs[toInd];
             }
             result = ComplexNumber.round(result, 10);
             outputString = Double.toString(result);
-            output.setText(outputString);
+            page.setOutput(outputString);
         } catch(Exception e) {
             Toast.makeText(getActivity(), "Could not convert.", Toast.LENGTH_LONG).show();
             outputString = "";
-            output.setText(outputString);
+            page.setOutput(outputString);
         }
-        return true;
     }
 
     private double convertTemp(String l1, String l2, double x) {
@@ -352,66 +257,41 @@ public class ConvCalc extends Fragment {
         return Integer.toString(med, b2);
     }
 
-    private int indexOf(String s, String[] a) {
-        for(int i = 0; i < a.length; i += 1) {
-            if(s.compareTo(a[i]) == 0) {
-                return i;
-            }
-        }
-        return -1;
+    @Override
+    public void paste() {
+        String newInp = appState.getConvCopyString();
+        page.setInput(newInp);
+        page.setInputSelection(newInp.length());
     }
 
-    private OnClickListener pasteBtn = new OnClickListener() {
-        public void onClick(View v) {
-            String newInp = appState.getConvCopyString();
-            input.setText(newInp);
-            input.setSelection(newInp.length());
+    @Override
+    public void copy() {
+        String text = page.getOutput();
+        if(text.length() > 0 && !text.equals("Result")) {
+            appState.setCopy(text);
         }
-    };
-
-    private OnClickListener copyBtn = new OnClickListener() {
-        public void onClick(View v) {
-            String text = output.getText().toString();
-            if(text.length() > 0 && !text.equals("Result")) {
-                appState.setCopy(text);
-            }
-        }
-    };
+    }
 
     private void showHelp(FragmentManager fm) {
         CalcApp.showTextDialog(fm, "Conversion Help", help_text);
     }
 
-    public void handleOptionsItemSelected(FragmentManager fm, int itemId) {
+    void handleOptionsItemSelected(FragmentManager fm, int itemId) {
         if(itemId == R.id.conv_help) {
             showHelp(fm);
         }
     }
 
-    private OnEditorActionListener calcAction = new OnEditorActionListener() {
-
-        @Override
-        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-            if(actionId == EditorInfo.IME_ACTION_DONE) {
-                doConversion();
-            }
-            return false;
-        }
-    };
-
-    private TextWatcher inputChanged = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
+    private OnEditorActionListener calcAction = (v, actionId, event) -> {
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
             doConversion();
         }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
+        return false;
     };
+
+    @Override
+    public void inputChanged() {
+        doConversion();
+    }
 
 }
