@@ -163,19 +163,20 @@ public class ConvPage {
             .horizontal()
             .weight(0.5f)
             .visibility(View.INVISIBLE)
+            .checkedChange((group, checkedId) -> pageInterface.radio(checkedId))
             .build(row);
         from = new RadioButtonBuilder(Style.TALL)
             .inLinear()
+            .id(FROM)
             .color(R.color.from_color)
             .text("From")
             .checked(true)
-            .click(v -> pageInterface.radio(FROM))
             .build(radio);
         to = new RadioButtonBuilder(Style.TALL)
             .inLinear()
+            .id(TO)
             .color(R.color.to_color)
             .text("To")
-            .click(v -> pageInterface.radio(TO))
             .build(radio);
 
         row = new LinearLayoutBuilder(Style.WIDE)
