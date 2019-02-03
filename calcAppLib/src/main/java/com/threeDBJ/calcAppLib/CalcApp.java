@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.threeDBJ.calcAppLib.cliCalc.*;
+import com.threeDBJ.calcAppLib.view.GraphView;
 import com.threeDBJ.calcAppLib.view.ListDialogFragment;
 import com.threeDBJ.calcAppLib.view.ListDialogFragment.ListDialogCallback;
 import com.threeDBJ.calcAppLib.view.TextDialogFragment;
@@ -28,7 +29,7 @@ public class CalcApp extends Application {
     Calculator[] graphCalcs = new Calculator[NUM_CALCS];
 
     float[][] zeros;
-    int traceLoc, fnState;
+    public int traceLoc, fnState;
     Calculator copyCalc = new Calculator();
     String shared;
 

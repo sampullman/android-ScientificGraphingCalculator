@@ -1,4 +1,4 @@
-package com.threeDBJ.calcAppLib;
+package com.threeDBJ.calcAppLib.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,11 +15,31 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
+import com.threeDBJ.calcAppLib.CalcApp;
 import com.threeDBJ.calcAppLib.graph.*;
+import com.threedbj.viewbuilder.generic.GenericSurfaceViewBuilder;
+
+import timber.log.Timber;
 
 // Graphics stuff
 
+@SuppressWarnings("ClickableViewAccessibility")
 public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
+
+    static abstract class GenericGraphViewBuilder<B extends GenericGraphViewBuilder<B, V>, V extends GraphView> extends GenericSurfaceViewBuilder<B, V> {
+
+        public V build(Context c, V v) {
+            super.build(c, v);
+            return v;
+        }
+    }
+
+    public static class GraphViewBuilder extends GenericGraphViewBuilder<GraphViewBuilder, GraphView> {
+        public GraphView build(Context c) {
+            return build(c, new GraphView(c));
+        }
+    }
+
     class GraphThread extends Thread {
 
         SurfaceHolder sHolder;
@@ -277,13 +297,16 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
-    private Paint mPaint = new Paint();
     public float[][] fnPts;
     public int xticks, yticks, graphMode;
     private GraphThread thread;
     private Bitmap bground;
     private CalcApp appState;
     public final int NUM_FNS = 3, GRAPH = 0, TRACE = 1;
+
+    public GraphView(Context context) {
+        this(context, null);
+    }
 
     public GraphView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -295,7 +318,15 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
         int[] color = {Color.BLACK};
         bground = Bitmap.createBitmap(color, 1, 1, Bitmap.Config.valueOf("RGB_565"));
 
-        this.setOnTouchListener(touchList);
+        this.setOnTouchListener((View v, MotionEvent event) -> {
+            if(graphMode == TRACE) {
+                thread.handleTrace(event);
+            } else {
+                thread.handleTouch(event);
+                appState.plotFns(fnPts, NUM_FNS);
+            }
+            return true;
+        });
         graphMode = GRAPH;
     }
 
@@ -337,6 +368,7 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
                 thread.join();
                 retry = false;
             } catch(InterruptedException e) {
+                Timber.e("Failed to join graph thread");
             }
         }
     }
@@ -362,55 +394,43 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
-    private OnTouchListener touchList = new OnTouchListener() {
-        public boolean onTouch(View v, MotionEvent event) {
-            if(graphMode == TRACE) {
-                thread.handleTrace(event);
-            } else {
-                thread.handleTouch(event);
-                appState.plotFns(fnPts, NUM_FNS);
-            }
-            return true;
-        }
-    };
-
     public float[][] getFnPts() {
         return fnPts;
     }
 
-    float getXLeft() {
+    public float getXLeft() {
         return thread.graph.getXMin();
     }
 
-    float getXRight() {
+    public float getXRight() {
         return thread.graph.getXMax();
     }
 
-    float getYTop() {
+    public float getYTop() {
         return thread.graph.getYMax();
     }
 
-    float getYBot() {
+    public float getYBot() {
         return thread.graph.getYMin();
     }
 
-    float getXMin() {
+    public float getXMin() {
         return (float) 0;
     }
 
-    float getYMin() {
+    public float getYMin() {
         return (float) 0;
     }
 
-    float getXMax() {
+    public float getXMax() {
         return (float) thread.getCanvWidth();
     }
 
-    float getYMax() {
+    public float getYMax() {
         return (float) thread.getCanvHeight();
     }
 
-    float getXUnitLen() {
+    public float getXUnitLen() {
         return thread.graph.xUnitLen;
     }
 

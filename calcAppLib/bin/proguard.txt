@@ -75,7 +75,7 @@
 -keep class com.threeDBJ.calcAppLib.view.CalcEditText { <init>(...); }
 
 # view res/layout/graph.xml #generated:8
--keep class com.threeDBJ.calcAppLib.GraphView { <init>(...); }
+-keep class com.threeDBJ.calcAppLib.view.GraphView { <init>(...); }
 
 # view res/layout/null_keyboard.xml #generated:2
 -keep class com.threeDBJ.calcAppLib.view.NullKeyboardView { <init>(...); }
