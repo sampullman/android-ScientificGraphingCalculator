@@ -1,24 +1,23 @@
 package com.threeDBJ.calcAppLib;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import android.view.LayoutInflater;
+import android.preference.PreferenceManager;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
+import com.threeDBJ.calcAppLib.CalcTabsActivity.CalcTab;
 import com.threeDBJ.calcAppLib.cliCalc.ComplexNumber;
 import com.threeDBJ.calcAppLib.view.page.ConvPage;
 import com.threeDBJ.calcAppLib.view.page.ConvPage.ConvPageInterface;
 import static com.threeDBJ.calcAppLib.view.page.ConvPage.*;
 
-public class ConvCalc extends Fragment implements ConvPageInterface {
+public class ConvCalc extends CalcTab implements ConvPageInterface {
+    private Activity activity;
 
     private ConvPage page;
     private SelectedAdapter convTypeAdapter, convChoiceAdapter;
@@ -71,11 +70,46 @@ public class ConvCalc extends Fragment implements ConvPageInterface {
 
     private String unitString = "", inputString = "", outputString = "";
 
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        appState = (CalcApp) getActivity().getApplicationContext();
+    public ConvCalc(Activity activity) {
+        this.activity = activity;
+    }
+
+    public View getView() {
+        appState = (CalcApp) activity.getApplicationContext();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
 
         page = new ConvPage(this, convChoiceAdapter, convTypeAdapter);
-        return page.getView(getActivity());
+        View v = page.getView(activity);
+
+        result = 0;
+
+        convTypeAdapter = new SelectedAdapter(activity, 0, convTypes, Color.GRAY);
+        convTypeAdapter.setNotifyOnChange(true);
+
+        int[] colors = {Color.argb(225, 0, 200, 225), Color.argb(225, 245, 0, 190)};
+        String[] temp = {};
+        convChoiceAdapter = new SelectedAdapter(activity, 0, temp, colors);
+        convChoiceAdapter.setNotifyOnChange(true);
+        page.setAdapters(convChoiceAdapter, convTypeAdapter);
+
+        page.setUnit(unitString);
+
+        inputString = prefs.getString("input_string", "");
+        outputString = prefs.getString("output_string", "");
+        page.setInput(inputString);
+        page.setOutput(outputString);
+        convInd = prefs.getInt("conv_ind", 0);
+        if(convInd != -1) {
+            convTypeAdapter.setSelectedPosition(convInd);
+            showConvChoice(convInd);
+            fromInd = prefs.getInt("from_ind", 0);
+            toInd = prefs.getInt("to_ind", 0);
+            convChoiceAdapter.setSelectedPosition(fromInd, FROM);
+            convChoiceAdapter.setSelectedPosition(toInd, TO);
+            choiceType = prefs.getInt("choice_type", 0);
+            page.setRadio(choiceType);
+        }
+        return v;
     }
 
     private void setUnit(String text) {
@@ -83,54 +117,20 @@ public class ConvCalc extends Fragment implements ConvPageInterface {
         page.setUnit(text);
     }
 
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        result = 0;
-
-        convTypeAdapter = new SelectedAdapter(getActivity(), 0, convTypes, Color.GRAY);
-        convTypeAdapter.setNotifyOnChange(true);
-
-        int[] colors = {Color.argb(225, 0, 200, 225), Color.argb(225, 245, 0, 190)};
-        String[] temp = {};
-        convChoiceAdapter = new SelectedAdapter(getActivity(), 0, temp, colors);
-        convChoiceAdapter.setNotifyOnChange(true);
-        page.setAdapters(convChoiceAdapter, convTypeAdapter);
-
-        page.setUnit(unitString);
-
-        if(savedInstanceState != null) {
-            inputString = savedInstanceState.getString("input_string");
-            outputString = savedInstanceState.getString("output_string");
-            page.setInput(inputString);
-            page.setOutput(outputString);
-            convInd = savedInstanceState.getInt("conv_ind");
-            if(convInd != -1) {
-                convTypeAdapter.setSelectedPosition(convInd);
-                showConvChoice(convInd);
-                fromInd = savedInstanceState.getInt("from_ind");
-                toInd = savedInstanceState.getInt("to_ind");
-                convChoiceAdapter.setSelectedPosition(fromInd, FROM);
-                convChoiceAdapter.setSelectedPosition(toInd, TO);
-                choiceType = savedInstanceState.getInt("choice_type");
-                page.setRadio(choiceType);
-            }
-        }
+    @Override
+    public void pause(SharedPreferences.Editor edit) {
+        edit.putString("input_string", page.getInput());
+        edit.putString("output_string", page.getOutput());
+        edit.putInt("from_ind", fromInd);
+        edit.putInt("to_ind", toInd);
+        edit.putInt("choice_type", choiceType);
+        edit.putInt("conv_ind", convInd);
+        appState.shared = copy;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putString("input_string", page.getInput());
-        savedInstanceState.putString("output_string", page.getOutput());
-        savedInstanceState.putInt("from_ind", fromInd);
-        savedInstanceState.putInt("to_ind", toInd);
-        savedInstanceState.putInt("choice_type", choiceType);
-        savedInstanceState.putInt("conv_ind", convInd);
+    public void resume() {
+        copy = appState.shared;
     }
 
     @Override
@@ -182,17 +182,6 @@ public class ConvCalc extends Fragment implements ConvPageInterface {
         choiceType = ind;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        copy = appState.shared;
-    }
-
-    public void onPause() {
-        super.onPause();
-        appState.shared = copy;
-    }
-
     /* Grabs input, converts it appropriately, and displays conversion.
        Returns a boolean for calls from onContextItemSelected */
     private void doConversion() {
@@ -222,7 +211,7 @@ public class ConvCalc extends Fragment implements ConvPageInterface {
             outputString = Double.toString(result);
             page.setOutput(outputString);
         } catch(Exception e) {
-            Toast.makeText(getActivity(), "Could not convert.", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "Could not convert.", Toast.LENGTH_LONG).show();
             outputString = "";
             page.setOutput(outputString);
         }
@@ -272,13 +261,14 @@ public class ConvCalc extends Fragment implements ConvPageInterface {
         }
     }
 
-    private void showHelp(FragmentManager fm) {
-        CalcApp.showTextDialog(fm, "Conversion Help", help_text);
+    private void showHelp() {
+        CalcApp.showTextDialog(activity, "Conversion Help", help_text);
     }
 
-    void handleOptionsItemSelected(FragmentManager fm, int itemId) {
+    @Override
+    public void handleOptionsItemSelected(int itemId) {
         if(itemId == R.id.conv_help) {
-            showHelp(fm);
+            showHelp();
         }
     }
 

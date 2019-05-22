@@ -1,5 +1,6 @@
 package com.threeDBJ.calcAppLib;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.content.Context;
@@ -10,15 +11,12 @@ import android.widget.ArrayAdapter;
 import android.net.Uri;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.threeDBJ.calcAppLib.cliCalc.*;
 import com.threeDBJ.calcAppLib.view.GraphView;
-import com.threeDBJ.calcAppLib.view.ListDialogFragment;
 import com.threeDBJ.calcAppLib.view.ListDialogFragment.ListDialogCallback;
-import com.threeDBJ.calcAppLib.view.TextDialogFragment;
 
 public class CalcApp extends Application {
 
@@ -249,18 +247,24 @@ public class CalcApp extends Application {
         return ft;
     }
 
-    public static void showTextDialog(FragmentManager fm, String title, String body) {
+    public static void showTextDialog(Activity activity, String title, String body) {
+        // TODO -- unfragment this
+        /*
         FragmentTransaction ft = CalcApp.removePrevDialog(fm);
 
         // Create and show the dialog.
         DialogFragment newFragment = TextDialogFragment.newInstance(title, body);
         newFragment.show(ft, "dialog");
+        */
     }
 
-    public static void showListDialog(FragmentManager fm, String title, String[] body, ListDialogCallback callback) {
+    public static void showListDialog(Activity activity, String title, String[] body, ListDialogCallback callback) {
+        // TODO -- unfragment this
+        /*
         FragmentTransaction ft = CalcApp.removePrevDialog(fm);
         DialogFragment newFragment = ListDialogFragment.newInstance(title, body, callback);
         newFragment.show(ft, "dialog");
+        */
     }
 
 }

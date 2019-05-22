@@ -1,9 +1,6 @@
 package com.threeDBJ.calcAppLib;
 
-import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import android.app.Activity;
 import androidx.fragment.app.FragmentManager;
 
 import android.view.View;
@@ -17,19 +14,26 @@ import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
 import android.content.Context;
 import android.view.WindowManager;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
+import com.threeDBJ.calcAppLib.CalcTabsActivity.CalcTab;
 import com.threeDBJ.calcAppLib.cliCalc.*;
 import com.threeDBJ.calcAppLib.view.CalcEditText;
 import com.threeDBJ.calcAppLib.view.ListDialogFragment.ListDialogCallback;
 import com.threeDBJ.calcAppLib.view.page.CalcPage;
 import com.threeDBJ.calcAppLib.view.page.CalcPage.CalcPageInterface;
 
+import java.util.ArrayList;
+
 import timber.log.Timber;
 
 import static com.threeDBJ.calcAppLib.view.page.CalcPage.ANSWER_COUNT;
 
-public class mainCalc extends Fragment implements ListDialogCallback, CalcPageInterface {;
+public class mainCalc extends CalcTab implements ListDialogCallback, CalcPageInterface {
+    private static String PREFS_KEY_INPUT = "input_string";
+    private static String PREFS_KEY_RESULT = "result_string";
+    private static String PREFS_KEY_SELECTION = "selection_key";
+    private static String PREFS_KEY_OLD_INPUTS = "old_inputs";
+    private static String PREFS_KEY_OLD_ANSWERS = "old_answers";
+    private Activity activity;
 
     private final int PREV_ANSWER = 0;
     private final int PREV_ENTRY = 1;
@@ -47,20 +51,21 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
     private static final String help_text = "-Use the tabs at the top to switch between calculator, unit conversion, and graphing modes.\n-Press shift for more functions.\n-1/x and % functions evaluate the current expression and then operate on the result.\n-copy/paste works for numbers and expressions across all tabs.\n-last/ans contain previous expressions and answers, respectively\n-5E6 is equivalent to 5*10^6\n-Tap a previous result to insert it, or previous equation to replace the current input.\n\n-Please submit bugs and feature requests to 3dbj.dev@gmail.com";
 
     private CalcApp appState;
+    
+    public mainCalc(Activity activity) {
+        this.activity = activity;
+    }
 
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+    public View getView() {
+        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         registerPreferenceListener();
 
         calcPage = new CalcPage(prefs,this);
-        return calcPage.getView(getActivity());
-    }
+        View v = calcPage.getView(activity);
 
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        appState = (CalcApp)getActivity().getApplicationContext();
+        appState = (CalcApp)activity.getApplicationContext();
         this.calc = appState.getMainCalc();
         if(calc == null) {
             Timber.e("null main calc");
@@ -73,51 +78,45 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         }
         appState.setGlobalAngleMode(prefs.getBoolean("angle_rad", true));
 
-        if(savedInstanceState != null) {
-            calc.viewStr = savedInstanceState.getString("input_string");
-            calc.result = savedInstanceState.getString("result_string");
-            if(calc.viewStr == null) calc.viewStr = "";
-            if(calc.result == null) calc.result = "";
-            setIndex(savedInstanceState.getInt("selection_index"));
-            calcPage.setCalc(calc.viewStr, getIndex());
-            // if(savedInstanceState.getStringArrayList("old_inputs") != null) {
-            // 	calc.oldViews = savedInstanceState.getStringArrayList("old_inputs");
-            // }
-            // if(calc.answers = savedInstanceState.getStringArrayList("old_answers") != null) {
-            // 	calc.answers = savedInstanceState.getStringArrayList("old_answers");
-            // }
-            updatePrevResults();
-            calcPage.setResult(calc.calcOnTheFly());
+        calc.viewStr = prefs.getString(PREFS_KEY_INPUT, "");
+        calc.result = prefs.getString(PREFS_KEY_RESULT, "");
+        if(calc.viewStr == null) calc.viewStr = "";
+        if(calc.result == null) calc.result = "";
+        setIndex(prefs.getInt(PREFS_KEY_SELECTION, 0));
+        calcPage.setCalc(calc.viewStr, getIndex());
+        // if(savedInstanceState.getStringArrayList("old_inputs") != null) {
+        // 	calc.oldViews = savedInstanceState.getStringArrayList("old_inputs");
+        // }
+        // if(calc.answers = savedInstanceState.getStringArrayList("old_answers") != null) {
+        // 	calc.answers = savedInstanceState.getStringArrayList("old_answers");
+        // }
+        updatePrevResults();
+        calcPage.setResult(calc.calcOnTheFly());
+        return v;
+    }
+
+    private String serialize(ArrayList<String> arr) {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i < arr.size(); i += 1) {
+            sb.append(arr.get(i));
+            if(i != arr.size() - 1) {
+                sb.append('|');
+            }
         }
+        return sb.toString();
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if(calc != null) {
-            updatePrevResults();
-            calcPage.setCalc(calc.viewStr, getIndex());
-            calcPage.setResult(calc.calcOnTheFly());
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
+    public void pause(SharedPreferences.Editor edit) {
         if(calc != null) {
             if(calc.viewStr != null) {
-                savedInstanceState.putString("input_string", calc.viewStr);
-                savedInstanceState.putString("result_string", calc.result);
-                savedInstanceState.putInt("selection_index", calc.getViewIndex());
+                edit.putString(PREFS_KEY_INPUT, calc.viewStr);
+                edit.putString(PREFS_KEY_RESULT, calc.result);
+                edit.putInt(PREFS_KEY_SELECTION, calc.getViewIndex());
             }
             if(calc.oldViews != null && calc.answers != null) {
-                savedInstanceState.putStringArrayList("old_inputs", calc.oldViews);
-                savedInstanceState.putStringArrayList("old_answers", calc.answers);
+                edit.putString(PREFS_KEY_OLD_INPUTS, serialize(calc.oldViews));
+                edit.putString(PREFS_KEY_OLD_ANSWERS, serialize(calc.answers));
             }
         }
     }
@@ -203,7 +202,7 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
 
     @Override
     public void calcInputClick(CalcEditText calcInput) {
-        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
+        InputMethodManager imm = (InputMethodManager)activity.getSystemService(
                 Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(calcInput.getWindowToken(), 0);
     }
@@ -299,7 +298,7 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
                 calcPage.setResult(calc.result);
                 updatePrevResults();
             } else {
-                Toast.makeText(getActivity(), "Error: Could not calculate", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "Error: Could not calculate", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -320,7 +319,7 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
 
     @Override
     public void answer(View v) {
-        getActivity().openContextMenu(v);
+        activity.openContextMenu(v);
     }
 
     @Override
@@ -377,12 +376,12 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
         addCalcFn(extra_fns[ind], extra_fns[ind]);
     }
 
-    private void showHelp(FragmentManager fm) {
-        CalcApp.showTextDialog(fm, "Calculator Help", help_text);
+    private void showHelp() {
+        CalcApp.showTextDialog(activity, "Calculator Help", help_text);
     }
 
-    private void showExtraFnsMenu(FragmentManager fm) {
-        CalcApp.showListDialog(fm, "Extra Functions", extra_fns, this);
+    private void showExtraFnsMenu() {
+        CalcApp.showListDialog(activity, "Extra Functions", extra_fns, this);
     }
 
     private void registerPreferenceListener() {
@@ -402,15 +401,15 @@ public class mainCalc extends Fragment implements ListDialogCallback, CalcPageIn
     }
 
     private void showOptionsMenu() {
-        Intent intent = new Intent(getContext(), Settings.class);
-        startActivityForResult(intent, 0);
+        Intent intent = new Intent(activity, Settings.class);
+        activity.startActivityForResult(intent, 0);
     }
 
-    void handleOptionsItemSelected(FragmentManager fm, int itemId) {
+    public void handleOptionsItemSelected(int itemId) {
         if(itemId == R.id.calc_help) {
-            showHelp(fm);
+            showHelp();
         } else if(itemId == R.id.extra_fns) {
-            showExtraFnsMenu(fm);
+            showExtraFnsMenu();
         } else if(itemId == R.id.settings) {
             showOptionsMenu ();
         }

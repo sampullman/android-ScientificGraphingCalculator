@@ -1,24 +1,27 @@
 package com.threeDBJ.calcAppLib;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.content.Intent;
 import android.net.Uri;
 import com.google.android.material.tabs.TabLayout;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
+import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentPagerAdapter;
-
 import java.util.ArrayList;
-import java.util.List;
 
 import timber.log.Timber;
 
@@ -28,10 +31,18 @@ public class CalcTabsActivity extends AppCompatActivity {
 
     int prevMenu = -1;
 
+    private ArrayList<CalcTab> tabItems = new ArrayList<>();
     CalcTabsAdapter calcTabsAdapter;
     CalcViewPager viewPager;
     Toolbar toolBar;
     TabLayout tabs;
+
+    public static abstract class CalcTab {
+        public abstract View getView();
+        public void pause(SharedPreferences.Editor edit) {}
+        public void resume() {}
+        public abstract void handleOptionsItemSelected(int itemId);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,22 +52,19 @@ public class CalcTabsActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_tabs);
+        tabItems.add(new mainCalc(this));
+        tabItems.add(new ConvCalc(this));
+        tabItems.add(new GraphCalc(this));
+
         viewPager = findViewById(R.id.calc_pager);
         toolBar = findViewById(R.id.toolbar);
         tabs = findViewById(R.id.tabs);
         //bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
         setSupportActionBar(toolBar);
 
-        setupViewPager(viewPager);
-        tabs.setupWithViewPager(viewPager);
-    }
-
-    private void setupViewPager(ViewPager viewPager) {
-        calcTabsAdapter = new CalcTabsAdapter(getSupportFragmentManager());
-        calcTabsAdapter.addFragment(new mainCalc(), "MAIN");
-        calcTabsAdapter.addFragment(new ConvCalc(), "CONVERSION");
-        calcTabsAdapter.addFragment(new GraphCalc(), "GRAPH");
+        calcTabsAdapter = new CalcTabsAdapter(tabItems);
         viewPager.setAdapter(calcTabsAdapter);
+        tabs.setupWithViewPager(viewPager);
     }
 
     @Override
@@ -95,51 +103,31 @@ public class CalcTabsActivity extends AppCompatActivity {
             }
             startActivity(intent);
         } else {
-            switch(viewPager.getCurrentItem()) {
-            case CALC_TAB:
-                mainCalc calc = (mainCalc) calcTabsAdapter.getItem(CALC_TAB);
-                calc.handleOptionsItemSelected(getSupportFragmentManager(), item.getItemId());
-                break;
-            case CONV_TAB:
-                ConvCalc conv = (ConvCalc) calcTabsAdapter.getItem(CONV_TAB);
-                conv.handleOptionsItemSelected(getSupportFragmentManager(), item.getItemId());
-                break;
-            case GRAPH_TAB:
-                GraphCalc graph = (GraphCalc) calcTabsAdapter.getItem(GRAPH_TAB);
-                graph.handleOptionsItemSelected(getSupportFragmentManager(), item.getItemId());
-                break;
-            }
+            tabItems.get(viewPager.getCurrentItem()).handleOptionsItemSelected(item.getItemId());
         }
         return true;
     }
 
-    class CalcTabsAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> fragmentList = new ArrayList<>();
-        private final List<String> fragmentTitleList = new ArrayList<>();
+    class CalcTabsAdapter extends PagerAdapter {
+        ArrayList<CalcTab> tabItems;
 
-        CalcTabsAdapter(FragmentManager manager) {
-            super(manager);
+        CalcTabsAdapter(ArrayList<CalcTab> tabItems) {
+            this.tabItems = tabItems;
         }
 
-        @Override
-        public Fragment getItem(int position) {
-            Timber.e("GOT ITEM %s", position);
-            return fragmentList.get(position);
+        @Override @NonNull
+        public Object instantiateItem(@NonNull ViewGroup collection, int position) {
+            return tabItems.get(position).getView();
         }
 
         @Override
         public int getCount() {
-            return fragmentList.size();
-        }
-
-        void addFragment(Fragment fragment, String title) {
-            fragmentList.add(fragment);
-            fragmentTitleList.add(title);
+            return tabItems.size();
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
-            return fragmentTitleList.get(position);
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+            return view == object;
         }
     }
 

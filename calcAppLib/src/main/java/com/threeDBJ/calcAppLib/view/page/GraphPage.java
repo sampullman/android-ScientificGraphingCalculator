@@ -8,7 +8,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.threeDBJ.calcAppLib.R;
-import com.threeDBJ.calcAppLib.graph.Graph;
 import com.threeDBJ.calcAppLib.view.GraphView;
 import com.threeDBJ.calcAppLib.view.GraphView.GraphViewBuilder;
 import com.threedbj.viewbuilder.ButtonBuilder;
